@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import { Bebas_Neue, Poppins } from "next/font/google";
-import BackIcon from "@/public/assets/clientIcons/backIcon";
 import {
   Brain,
   ChevronsLeft,
@@ -12,8 +11,7 @@ import {
   LogOut,
 } from "lucide-react";
 import NavItem from "./navItems";
-import { LogoutBtn } from "../auth/authElems";
-import { signOut } from "next-auth/react";
+import { LogoutBtn } from "../auth/logoutBtn";
 
 const bebas = Bebas_Neue({ weight: "400", subsets: ["latin"] });
 const popp = Poppins({ weight: "400", subsets: ["latin"] });
@@ -153,26 +151,7 @@ const NavigationBar = () => {
         </div>
         {/* Bottom Area */}
         <div className="flex flex-col">
-          <button
-            className={
-              "w-full px-4 py-1 flex gap-3 items-center" +
-              (expand ? "" : " justify-center")
-            }
-            onClick={() => {
-              signOut({ callbackUrl: "/login" });
-            }}
-          >
-            <LogOut size={expand ? 23 : 26} />
-            <span
-              className={
-                "text-base overflow-hidden text-nowrap " +
-                (expand ? "" : "hidden w-0") +
-                popp.className
-              }
-            >
-              Log Out
-            </span>
-          </button>
+          {/* <LogoutBtn expand={expand} /> */}
         </div>
       </div>
     </div>

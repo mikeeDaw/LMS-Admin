@@ -11,4 +11,8 @@ const adminSchema = new Schema(
   { timestamps: true }
 );
 
-export const adminModel = mongoose.model('Admin', adminSchema)
+export const adminModel =
+  mongoose.models?.admins || mongoose.model("admins", adminSchema);
+
+export const findAdminbyEmail = (email: string) =>
+  adminModel.findOne({ email });
