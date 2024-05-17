@@ -8,18 +8,22 @@ interface Props {
 
 const NavItem: React.FC<Props> = ({ icon, textStr, expand }) => {
   return (
-    <div
-      className={"flex items-center gap-3 " + (expand ? "" : "justify-center")}
+    <button
+      className={
+        "flex items-center gap-3 px-4 py-2 relative overflow-hidden pill " +
+        (expand ? "" : "justify-center")
+      }
     >
-      <span className="">{icon}</span>
+      <span className="absolute z-0 w-[100px] h-[100px] flex grow bg-cyan-100 rounded-full right-[100%] pointer-events-none transition-all duration-300 pillCir2 " />
+      <span className="z-10">{icon}</span>
       <span
         className={
-          "overflow-hidden text-nowrap " + (expand ? "" : "hidden w-0")
+          "overflow-hidden text-nowrap z-10 " + (expand ? "" : "hidden w-0")
         }
       >
         {textStr}
       </span>
-    </div>
+    </button>
   );
 };
 

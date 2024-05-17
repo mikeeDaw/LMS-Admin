@@ -1,13 +1,15 @@
-"use client";
-
 import BackIcon from "@/public/assets/clientIcons/backIcon";
 import { Bebas_Neue, Poppins } from "next/font/google";
 import { CredentialLogIn, GoogleLogInBtn } from "../_components/auth/authElems";
+import { auth } from "@/auth";
+import { Toaster, toast } from "sonner";
 
 const bebas = Bebas_Neue({ weight: "400", subsets: ["latin"] });
 const popp = Poppins({ weight: "400", subsets: ["latin"] });
 
-const AdminLog = () => {
+const AdminLog = async () => {
+  const sesh = await auth();
+  console.log(sesh);
   return (
     <>
       <div className="bg-black w-screen h-screen flex">
@@ -29,9 +31,9 @@ const AdminLog = () => {
             }
           >
             <span className="bg-[linear-gradient(90deg,_#b8ffb3,_#62e759,_#24a91c)] text-transparent bg-clip-text">
-              Pinay
+              Learn
             </span>
-            flix.tv
+            flix
           </span>
           {/* Back Button */}
           <span
@@ -75,6 +77,10 @@ const AdminLog = () => {
               <CredentialLogIn />
             </div>
           </div>
+          <Toaster
+            position="bottom-left"
+            toastOptions={{ className: "w-3/4" }}
+          />
         </div>
       </div>
     </>

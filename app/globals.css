@@ -16,6 +16,14 @@
   @apply text-white !important;
 }
 
+.pill:hover .pillCir2 {
+  @apply right-[-10%] w-[300%];
+}
+
+.pill:hover * {
+  @apply text-black;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;

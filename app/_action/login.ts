@@ -2,7 +2,7 @@
 
 import * as z from "zod";
 import { LogSchema } from "../_schema";
-import { signIn } from "@/auth";
+import { signIn, signOut } from "@/auth";
 import { AuthError } from "next-auth";
 
 export const login = async (values: any) => {
@@ -19,7 +19,7 @@ export const login = async (values: any) => {
     await signIn("credentials", {
       email,
       password,
-      redirectTo: "/dashboard",
+      redirectTo: "/",
     });
   } catch (error) {
     console.log(error);
@@ -28,7 +28,7 @@ export const login = async (values: any) => {
         case "CredentialsSignin":
           return { error: true, msg: "Invalid Credentials" };
         default:
-          return { error: true, msg: "Something went Wrong..." };
+          return { error: true, msg: "Access Denied." };
       }
     }
     throw error;
@@ -36,4 +36,12 @@ export const login = async (values: any) => {
 
   // Login Successful. No Errors
   return { error: false, msg: "Login Successful" };
+};
+
+export const handleGoogSign = async (url: string) => {
+  await signIn("google", { callbackUrl: url });
+};
+
+export const handleOut = async (url: string) => {
+  await signOut({ redirectTo: url });
 };

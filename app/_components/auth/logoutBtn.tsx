@@ -1,6 +1,5 @@
-"use server";
-
-import { signOut } from "@/auth";
+// import { signIn, signOut } from "next-auth/react";
+import { handleOut } from "@/app/_action/login";
 import { LogOut } from "lucide-react";
 import { Poppins } from "next/font/google";
 
@@ -15,8 +14,7 @@ export const LogoutBtn: React.FC<Props> = ({ expand }) => {
   return (
     <form
       action={async () => {
-        "use server";
-        await signOut({ redirectTo: "/login" });
+        await handleOut("/login");
       }}
     >
       <button
@@ -24,9 +22,7 @@ export const LogoutBtn: React.FC<Props> = ({ expand }) => {
           "w-full px-4 py-1 flex gap-3 items-center" +
           (expand ? "" : " justify-center")
         }
-        onClick={() => {
-          signOut({ redirectTo: "/login" });
-        }}
+        type="submit"
       >
         <LogOut size={expand ? 23 : 26} />
         <span

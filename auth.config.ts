@@ -4,6 +4,7 @@ import Google from "next-auth/providers/google";
 import { LogSchema } from "./app/_schema";
 import { connectToDb } from "./app/lib/mongoose";
 import { findAdminbyEmail } from "./app/_models/adminModel";
+import bcrypt from "bcryptjs";
 
 export default {
   providers: [
@@ -20,9 +21,12 @@ export default {
           const { email, password } = validated.data;
 
           const admin = await findAdminbyEmail(email);
+
           if (!admin || !admin.password) return null;
 
-          if (password === admin.password) return admin;
+          const passMatch = await bcrypt.compare(password, admin.password);
+          console.log(password, admin.password, passMatch);
+          if (passMatch) return admin;
 
           return null;
         }
