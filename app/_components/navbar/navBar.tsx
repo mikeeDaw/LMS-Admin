@@ -12,16 +12,21 @@ import {
 } from "lucide-react";
 import NavItem from "./navItems";
 import { LogoutBtn } from "../auth/logoutBtn";
+import { motion } from "framer-motion";
+import { auth } from "@/auth";
 
 const bebas = Bebas_Neue({ weight: "400", subsets: ["latin"] });
 const popp = Poppins({ weight: "400", subsets: ["latin"] });
 const poppSemi = Poppins({ weight: "600", subsets: ["latin"] });
 
-const NavigationBar = () => {
-  const [expand, setExpand] = useState(true);
+interface Props {
+  name: string
+}
 
+const NavigationBar: React.FC<Props> = async ({name}) => {
+  const [expand, setExpand] = useState(true);
   return (
-    <div
+    <motion.div
       className={
         "bg-black flex flex-col h-screen text-[#BBBBBB] transition-all border-r border-[#888888] " +
         (expand ? "w-[220px] " : "w-[90px] ") +
@@ -74,7 +79,7 @@ const NavigationBar = () => {
                     (expand ? " " : " w-0 h-0")
                   }
                 >
-                  Anthony Ogag
+                  {name}
                 </span>
                 <span
                   className={
@@ -154,7 +159,7 @@ const NavigationBar = () => {
           <LogoutBtn expand={expand} />
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

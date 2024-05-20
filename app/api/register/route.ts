@@ -20,8 +20,7 @@ export async function POST(req: NextRequest) {
       const hashedpass = await bcrypt.hash(password, 10);
 
       const adminis = await createAdmin({
-        fName,
-        lName,
+        name: `${fName} ${lName}`,
         email,
         password: hashedpass,
         userRole: "ADMIN",

@@ -1,7 +1,7 @@
-import NavigationBar from "./_components/navbar/navBar";
+import NavigationBar from "../_components/navbar/navBar";
 import { Bebas_Neue } from "next/font/google";
 import { auth } from "@/auth";
-import Pill from "./_components/dashboard/pills";
+import Pill from "../_components/dashboard/pills";
 import {
   Brain,
   DollarSign,
@@ -17,7 +17,6 @@ export default async function Home() {
   console.log(sesh);
   return (
     <>
-      <NavigationBar />
       <div className="w-full h-screen bg-[#696969] flex flex-col gap-1">
         {/* Header */}
         <div className="w-full h-[69px] bg-black py-4 flex px-5 items-center">

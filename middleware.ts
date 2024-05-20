@@ -10,19 +10,24 @@ import {
 const { auth } = NextAuth(authConfig);
 
 export default auth((req) => {
-  // const { nextUrl } = req;
-  // const isLogged = !!req.auth;
-  // const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
-  // const isAuthRoute = authRoutes.includes(nextUrl.pathname);
-  // if (isAuthRoute) {
-  //   if (isLogged) {
-  //     return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
-  //   }
-  //   return;
-  // }
-  // if (!isLogged && !isPublicRoute) {
-  //   return Response.redirect(new URL("/login", nextUrl));
-  // }
+  const { nextUrl } = req;
+  const isLogged = !!req.auth;
+  const isAuthPrefix = nextUrl.pathname.startsWith(apiAuthPrefix);
+  const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
+  const isAuthRoute = authRoutes.includes(nextUrl.pathname);
+  console.log(nextUrl.pathname);
+  if (isAuthPrefix || nextUrl.pathname.includes("/api/register")) {
+    return;
+  }
+  if (isAuthRoute) {
+    if (isLogged) {
+      return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+    }
+    return;
+  }
+  if (!isLogged && !isPublicRoute) {
+    return Response.redirect(new URL("/login", nextUrl));
+  }
   return;
 });
 
