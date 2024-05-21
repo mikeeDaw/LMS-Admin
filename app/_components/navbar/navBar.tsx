@@ -13,17 +13,16 @@ import {
 import NavItem from "./navItems";
 import { LogoutBtn } from "../auth/logoutBtn";
 import { motion } from "framer-motion";
-import { auth } from "@/auth";
 
 const bebas = Bebas_Neue({ weight: "400", subsets: ["latin"] });
 const popp = Poppins({ weight: "400", subsets: ["latin"] });
 const poppSemi = Poppins({ weight: "600", subsets: ["latin"] });
 
 interface Props {
-  name: string
+  name: string;
 }
 
-const NavigationBar: React.FC<Props> = async ({name}) => {
+const NavigationBar: React.FC<Props> = ({ name }) => {
   const [expand, setExpand] = useState(true);
   return (
     <motion.div

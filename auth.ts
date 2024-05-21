@@ -13,8 +13,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async signIn({ user }) {
       await connectToDb();
       const theUser = await adminModel.findOne({ email: user.email });
-      console.log("In SignIn:", theUser);
-      console.log("LOGIN", theUser);
       if (theUser) {
         if (theUser.userRole == undefined) {
           await adminModel.findByIdAndUpdate(
@@ -28,13 +26,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return true;
         } else {
           if (theUser.userRole == "USER") {
-            return false;
+            return "/login?error=Access-Denied";
           } else {
             return true;
           }
         }
       } else {
-        return true;
+        return "/login?error=No-Account";
       }
     },
     async session({ token, session, user }) {

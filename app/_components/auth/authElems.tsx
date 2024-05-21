@@ -26,10 +26,10 @@ const GoogleLogInBtn = () => {
   const deny = param.get("error");
 
   const denyFunc = () => {
-    if (deny && deny == "AccessDenied") {
+    if (deny) {
       setTimeout(() => {
         toast.error("ERROR!", {
-          description: "Access Denied.",
+          description: deny.replace("-", " ") + ".",
           duration: 3000,
           icon: (
             <span className="text-red-500 ps-2">
