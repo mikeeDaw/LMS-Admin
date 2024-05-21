@@ -26,7 +26,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return true;
         } else {
           if (theUser.userRole == "USER") {
-            return "/login?error=Access-Denied";
+            return false;
           } else {
             return true;
           }

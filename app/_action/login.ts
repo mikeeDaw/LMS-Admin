@@ -27,9 +27,9 @@ export const login = async (values: any) => {
         case "CredentialsSignin":
           return { error: true, msg: "Invalid Credentials" };
         case "AccessDenied":
-          return { error: true, msg: "DAMN" };
-        default:
           return { error: true, msg: "Access Denied." };
+        default:
+          return { error: true, msg: "Not Allowed." };
       }
     }
     throw error;
