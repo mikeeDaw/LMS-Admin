@@ -57,7 +57,7 @@ const GoogleLogInBtn = () => {
       <span className="w-5">
         <img src="/assets/images/google.svg" alt="Google Logo" />
       </span>
-      <span className={"text-[#BBBBBB] " + poppSemi.className}>
+      <span className={"text-[#BBBBBB] text-xs " + poppSemi.className}>
         Continue with Google
       </span>
     </button>
@@ -133,7 +133,7 @@ const CredentialLogIn = () => {
         <div className="w-full relative">
           <input
             className={
-              "border text-[#DDDDDD] bg-[#0a0a0a] py-3 w-full text-sm outline-none pe-3 rounded-lg ps-14 " +
+              "border text-[#DDDDDD] bg-[#0a0a0a] py-3 w-full text-xs outline-none pe-3 rounded-lg ps-14 " +
               (logErr || errors.email != undefined
                 ? "border-[#f25d5d] "
                 : "border-[#BBBBBB] focus:border-[#76d867] focus:text-[#76d867] ") +
@@ -163,7 +163,7 @@ const CredentialLogIn = () => {
         <div className="w-full relative">
           <input
             className={
-              "border text-[#DDDDDD] bg-[#0a0a0a] py-3 w-full text-sm outline-none pe-3 rounded-lg ps-14 " +
+              "border text-[#DDDDDD] bg-[#0a0a0a] py-3 w-full text-xs outline-none pe-3 rounded-lg ps-14 " +
               (logErr || errors.password != undefined
                 ? "border-[#f25d5d] "
                 : "border-[#BBBBBB] focus:border-[#76d867] focus:text-[#76d867] ") +
@@ -191,7 +191,7 @@ const CredentialLogIn = () => {
         {/* Submit */}
         <button
           className={
-            "bg-[#76d867] w-full py-3 rounded-lg text-[#333333] " +
+            "bg-[#76d867] w-full text-sm py-3 rounded-lg text-[#333333] " +
             poppSemi.className
           }
           disabled={isPending}
