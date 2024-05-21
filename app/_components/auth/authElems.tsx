@@ -17,7 +17,9 @@ import * as z from "zod";
 const popp = Poppins({ weight: "400", subsets: ["latin"] });
 const poppSemi = Poppins({ weight: "600", subsets: ["latin"] });
 
-const GoogleLogInBtn = () => {
+
+
+const GoogleLogInBtn= () => {
   const handleClick = () => {
     signIn("google", { callbackUrl: "/" });
   };
