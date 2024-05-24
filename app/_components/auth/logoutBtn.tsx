@@ -19,15 +19,15 @@ export const LogoutBtn: React.FC<Props> = ({ expand }) => {
     >
       <button
         className={
-          "w-full px-4 py-1 flex gap-3 items-center" +
+          "w-full px-4 py-1 flex gap-2 items-center" +
           (expand ? "" : " justify-center")
         }
         type="submit"
       >
-        <LogOut size={expand ? 23 : 26} />
+        <LogOut size={expand ? 21 : 24} />
         <span
           className={
-            "text-base overflow-hidden text-nowrap " +
+            "text-sm overflow-hidden text-nowrap " +
             (expand ? "" : "hidden w-0") +
             popp.className
           }

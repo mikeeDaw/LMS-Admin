@@ -15,15 +15,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       const theUser = await adminModel.findOne({ email: user.email });
       if (theUser) {
         if (theUser.userRole == undefined) {
-          await adminModel.findByIdAndUpdate(
-            { _id: user.id },
-            {
-              $set: { userRole: "ADMIN" },
-            },
-            { strict: false }
-          );
-
-          return true;
+          return false;
         } else {
           if (theUser.userRole == "USER") {
             return false;

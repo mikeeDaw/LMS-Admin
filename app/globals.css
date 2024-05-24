@@ -33,6 +33,11 @@
   scrollbar-width: none; /* Firefox */
 }
 
+.dropRes::before {
+  content: "";
+  @apply w-full h-[1em] bg-transparent block absolute top-[-1em] ;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;

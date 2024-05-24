@@ -28,7 +28,7 @@ const NavigationBar: React.FC<Props> = ({ name }) => {
     <motion.div
       className={
         "bg-black flex flex-col h-screen text-[#BBBBBB] transition-all border-r border-[#888888] " +
-        (expand ? "w-[220px] " : "w-[90px] ") +
+        (expand ? "w-[210px] " : "w-[90px] ") +
         popp.className
       }
     >
@@ -96,12 +96,12 @@ const NavigationBar: React.FC<Props> = ({ name }) => {
           <div
             className={
               "flex flex-col border-b pb-8 border-[#8888887F] " +
-              (expand ? "gap-2" : "gap-4")
+              (expand ? "gap-0" : "gap-2")
             }
           >
             <span
               className={
-                "text-lg translate-y-1 mb-2 px-4 overflow-hidden text-nowrap " +
+                "text-base translate-y-1 mb-2 px-4 overflow-hidden text-nowrap " +
                 bebas.className +
                 (expand ? "" : " w-0 h-0")
               }
@@ -110,13 +110,15 @@ const NavigationBar: React.FC<Props> = ({ name }) => {
             </span>
             <NavItem
               expand={expand}
-              icon={<Home size={expand ? 23 : 26} />}
+              icon={<Home size={expand ? 21 : 24} />}
               textStr="Dashboard"
+              redirect="/"
             />
             <NavItem
               expand={expand}
-              icon={<Flag size={expand ? 23 : 26} />}
+              icon={<Flag size={expand ? 21 : 24} />}
               textStr="Reports"
+              redirect="#"
             />
           </div>
 
@@ -124,12 +126,12 @@ const NavigationBar: React.FC<Props> = ({ name }) => {
           <div
             className={
               "flex flex-col border-b pb-8 border-[#8888887F] " +
-              (expand ? "gap-2" : "gap-4")
+              (expand ? "gap-0" : "gap-2")
             }
           >
             <span
               className={
-                "text-lg translate-y-1 mb-2 px-4 overflow-hidden text-nowrap " +
+                "text-base translate-y-1 mb-2 px-4 overflow-hidden text-nowrap " +
                 bebas.className +
                 (expand ? "" : " w-0 h-0")
               }
@@ -138,18 +140,21 @@ const NavigationBar: React.FC<Props> = ({ name }) => {
             </span>
             <NavItem
               expand={expand}
-              icon={<GraduationCap size={expand ? 25 : 28} />}
+              icon={<GraduationCap size={expand ? 22 : 25} />}
               textStr="Courses"
+              redirect="/courses"
             />
             <NavItem
               expand={expand}
-              icon={<Brain size={expand ? 23 : 26} />}
+              icon={<Brain size={expand ? 21 : 24} />}
               textStr="Students"
+              redirect="#"
             />
             <NavItem
               expand={expand}
-              icon={<Gem size={expand ? 23 : 26} />}
+              icon={<Gem size={expand ? 21 : 24} />}
               textStr="Kahit Ano"
+              redirect="#"
             />
           </div>
         </div>

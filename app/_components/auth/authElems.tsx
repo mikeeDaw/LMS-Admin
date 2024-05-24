@@ -17,9 +17,7 @@ import * as z from "zod";
 const popp = Poppins({ weight: "400", subsets: ["latin"] });
 const poppSemi = Poppins({ weight: "600", subsets: ["latin"] });
 
-
-
-const GoogleLogInBtn= () => {
+const GoogleLogInBtn = () => {
   const handleClick = () => {
     signIn("google", { callbackUrl: "/" });
   };
@@ -84,6 +82,74 @@ const CredentialLogIn = () => {
       password: "",
     },
   });
+
+  // No input error msg
+  useEffect(() => {
+    if (
+      errors.email &&
+      errors.password &&
+      errors.email.message &&
+      errors.password.message
+    ) {
+      if (
+        errors.email.message.search("Required") > -1 &&
+        errors.password.message.search("Required") > -1
+      ) {
+        toast.error("ERROR!", {
+          description: "Please Fill Out the Fields.",
+          duration: 4500,
+          icon: (
+            <span className="text-red-500 ps-2">
+              <CircleX />
+            </span>
+          ),
+          classNames: {
+            toast: "bg-[#121212] border-none",
+            title: "ms-4 text-red-500",
+            description: "ms-4 text-[#CCCCCC]",
+            icon: "bg-black",
+          },
+        });
+      }
+    } else if (errors.email && errors.email.message) {
+      if (errors.email.message.search("Required") > -1) {
+        toast.error("ERROR!", {
+          description: errors.email.message,
+          duration: 4500,
+          icon: (
+            <span className="text-red-500 ps-2">
+              <CircleX />
+            </span>
+          ),
+          classNames: {
+            toast: "bg-[#121212] border-none",
+            title: "ms-4 text-red-500",
+            description: "ms-4 text-[#CCCCCC]",
+            icon: "bg-black",
+          },
+        });
+      }
+      if (errors.password && errors.password.message) {
+        if (errors.password.message.search("Required") > -1) {
+          toast.error("ERROR!", {
+            description: errors.password.message,
+            duration: 4500,
+            icon: (
+              <span className="text-red-500 ps-2">
+                <CircleX />
+              </span>
+            ),
+            classNames: {
+              toast: "bg-[#121212] border-none",
+              title: "ms-4 text-red-500",
+              description: "ms-4 text-[#CCCCCC]",
+              icon: "bg-black",
+            },
+          });
+        }
+      }
+    }
+  }, [errors.email, errors.password]);
 
   const handleClick = (values: z.infer<typeof LogSchema>) => {
     startTransition(async () => {
