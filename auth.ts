@@ -15,7 +15,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       const theUser = await adminModel.findOne({ email: user.email });
       if (theUser) {
         if (theUser.userRole == undefined) {
-          return false;
+          return "/login?error=Access-Denied";
         } else {
           if (theUser.userRole == "USER") {
             return false;

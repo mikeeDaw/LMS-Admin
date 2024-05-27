@@ -24,7 +24,7 @@ const GoogleLogInBtn = () => {
   // For Google Deny
   const param = useSearchParams();
   const deny = param.get("error");
-
+  console.log(deny);
   const denyFunc = () => {
     if (deny) {
       setTimeout(() => {
