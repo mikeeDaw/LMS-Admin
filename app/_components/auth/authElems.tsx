@@ -53,6 +53,7 @@ const GoogleLogInBtn = () => {
     <button
       className="flex border border-[#DDDDDD] bg-[#0a0a0a] w-full justify-center items-center gap-6 py-3 rounded-lg"
       onClick={handleClick}
+      data-testid="google-login-button"
     >
       <span className="w-5">
         <img src="/assets/images/google.svg" alt="Google Logo" />
@@ -207,6 +208,7 @@ const CredentialLogIn = () => {
                 : "border-[#BBBBBB] focus:border-[#76d867] focus:text-[#76d867] ") +
               popp.className
             }
+            data-testid="email-login-field"
             onFocus={() => {
               setEmailFocus(true);
             }}
@@ -237,6 +239,7 @@ const CredentialLogIn = () => {
                 : "border-[#BBBBBB] focus:border-[#76d867] focus:text-[#76d867] ") +
               popp.className
             }
+            data-testid="password-login-field"
             onFocus={() => {
               setPassFocus(true);
             }}
@@ -262,6 +265,7 @@ const CredentialLogIn = () => {
             "bg-[#76d867] w-full text-sm py-3 rounded-lg text-[#333333] " +
             poppSemi.className
           }
+          data-testid="login-button"
           disabled={isPending}
           type="submit"
         >

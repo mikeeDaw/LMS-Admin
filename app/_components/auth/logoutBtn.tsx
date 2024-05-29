@@ -22,6 +22,7 @@ export const LogoutBtn: React.FC<Props> = ({ expand }) => {
           "w-full px-4 py-1 flex gap-2 items-center" +
           (expand ? "" : " justify-center")
         }
+        data-testid="logout-button"
         type="submit"
       >
         <LogOut size={expand ? 21 : 24} />

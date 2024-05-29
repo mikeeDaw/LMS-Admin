@@ -2,6 +2,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ChevronDown,
+  CircleCheckBig,
   CircleChevronRight,
   CircleX,
   Plus,
@@ -9,6 +10,8 @@ import {
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Bebas_Neue } from "next/font/google";
+import { addCourse } from "@/app/_action/courses";
+import { toast } from "sonner";
 
 const bebas = Bebas_Neue({ weight: "400", subsets: ["latin"] });
 
@@ -18,6 +21,15 @@ interface DropProps {
   setHov: React.Dispatch<React.SetStateAction<boolean>>;
 }
 interface StateBoolProps {
+  stateSet: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+interface addProps {
+  publisherEmail: string;
+  publisherName: string;
+}
+
+interface AddModal extends addProps {
   stateSet: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -33,21 +45,25 @@ export const Overlay: React.FC<StateBoolProps> = ({ stateSet }) => {
   );
 };
 
-export const ModalAdd: React.FC<StateBoolProps> = ({ stateSet }) => {
+export const ModalAdd: React.FC<AddModal> = ({
+  stateSet,
+  publisherEmail,
+  publisherName,
+}) => {
   const [tag, setTag] = useState("");
   const [title, setTitle] = useState("");
   const [code, setCode] = useState("");
   const [desc, setDesc] = useState("");
   const [theTags, setTheTags] = useState<string[]>([]);
-  const [hovDiff, setHovDiff] = useState(false);
-  const [hovTier, setHovTier] = useState(false);
+  const [clickDiff, setClickDiff] = useState(false);
+  const [clickTier, setClickTier] = useState(false);
   const [diffVal, setDiffVal] = useState("Beginner");
   const [tierVal, setTierVal] = useState("Free");
 
   const pressEntr = (e: any) => {
     if (e.key == "Enter") {
       if (tag !== "") {
-        setTheTags([...theTags, tag]);
+        setTheTags([tag, ...theTags]);
         setTag("");
       }
     }
@@ -61,10 +77,63 @@ export const ModalAdd: React.FC<StateBoolProps> = ({ stateSet }) => {
   const clickTag = (val: string) => {
     setTheTags((taggers) => taggers.filter((item) => item !== val));
   };
-  useEffect(()=>{
-    console.log(hovTier)
+  useEffect(() => {
+    console.log(clickTier);
+  }, [clickTier]);
 
-  }, [hovTier])
+  const handleSubmit = async () => {
+    if (!title || !code || !desc || theTags.length == 0) {
+      console.log("ERROR");
+      toast.error("Please Fill Out the Fields.", {
+        position: "top-center",
+        duration: 2500,
+        icon: (
+          <span className="text-[#ffffff]">
+            <CircleX />
+          </span>
+        ),
+        classNames: {
+          toast: "bg-red-400 border-none",
+          title: "ms-2 text-white",
+        },
+      });
+    } else {
+      const res = await addCourse({
+        title,
+        code,
+        desc,
+        tags: theTags,
+        tier: tierVal,
+        diff: diffVal,
+        publisherEmail,
+        publisherName,
+        students: [],
+        published: false,
+      });
+      if (!res.error) {
+        toast("Creation Success!", {
+          description: res.msg,
+          icon: (
+            <span>
+              <CircleCheckBig />
+            </span>
+          ),
+          classNames: {
+            toast: "bg-emerald-400 border-none",
+            title: "ms-3",
+            description: "ms-3",
+          },
+        });
+        setTheTags([]);
+        setTitle("");
+        setCode("");
+        setDesc("");
+        setTierVal("Free");
+        setDiffVal("Beginner");
+        setTag("");
+      }
+    }
+  };
 
   return (
     <>
@@ -79,7 +148,7 @@ export const ModalAdd: React.FC<StateBoolProps> = ({ stateSet }) => {
           y: "-50%",
         }}
         exit={{ opacity: 0, scale: 0 }}
-        className="absolute top-1/2 left-1/2 h-fit w-1/2 xl:w-5/12 translate-x-[-50%!important] translate-y-[-46%] z-50 rounded-2xl flex flex-col gap-5 py-5 px-8"
+        className="absolute top-1/2 left-1/2 h-fit w-1/2 xl:w-5/12 translate-x-[-50%!important] translate-y-[-46%] z-30 rounded-2xl flex flex-col gap-5 py-5 px-8"
         style={{
           background:
             "conic-gradient(from -25deg at 40% 0, #64da6a 0deg 180deg, black 90deg 180deg)",
@@ -141,7 +210,10 @@ export const ModalAdd: React.FC<StateBoolProps> = ({ stateSet }) => {
               </label>
             </div>
           </div>
-          <button className="z-10 bg-[#4eac53] text-white rounded-2xl px-4 text-sm hover:bg-[#232323] transition-all duration-200">
+          <button
+            className="z-10 bg-[#4eac53] text-white rounded-2xl px-4 text-sm hover:bg-[#232323] transition-all duration-200"
+            onClick={handleSubmit}
+          >
             Save
           </button>
         </div>
@@ -222,9 +294,8 @@ export const ModalAdd: React.FC<StateBoolProps> = ({ stateSet }) => {
           <div className="flex flex-col w-[40%] gap-2 h-full">
             {/* Tier */}
             <div
-              className="border border-[#606060] w-full rounded-xl px-3 pb-1 pt-4 relative"
-              onMouseEnter={() => setHovTier(true)}
-              onMouseLeave={() => setHovTier(false)}
+              className="border border-[#606060] cursor-pointer w-full rounded-xl px-3 pb-1 pt-4 relative"
+              onClick={() => setClickTier(!clickTier)}
             >
               <span
                 className={
@@ -240,21 +311,20 @@ export const ModalAdd: React.FC<StateBoolProps> = ({ stateSet }) => {
                 </span>
               </div>
               <AnimatePresence>
-                {hovTier && (
+                {clickTier && (
                   <DropdownMenu
                     key={"Drop2Tier"}
                     choices={["Free", "Premium", "Astro"]}
                     stateSet={setTierVal}
-                    setHov={setHovTier}
+                    setHov={setClickTier}
                   />
                 )}
               </AnimatePresence>
             </div>
             {/* Difficulty */}
             <div
-              className="border border-[#606060] w-full rounded-xl px-3 pb-1 pt-4 relative"
-              onMouseEnter={() => setHovDiff(true)}
-              onMouseLeave={() => setHovDiff(false)}
+              className="border border-[#606060] cursor-pointer w-full rounded-xl px-3 pb-1 pt-4 relative"
+              onClick={() => setClickDiff(!clickDiff)}
             >
               <span
                 className={
@@ -270,12 +340,12 @@ export const ModalAdd: React.FC<StateBoolProps> = ({ stateSet }) => {
                 </span>
               </div>
               <AnimatePresence>
-                {hovDiff && (
+                {clickDiff && (
                   <DropdownMenu
-                    key={"Drop2Diff"}
+                    key={"DiffDrop"}
                     choices={["Beginner", "Amateur", "Professional"]}
                     stateSet={setDiffVal}
-                    setHov={setHovDiff}
+                    setHov={setClickDiff}
                   />
                 )}
               </AnimatePresence>
@@ -298,18 +368,12 @@ const DropdownMenu: React.FC<DropProps> = ({ choices, stateSet, setHov }) => {
           transition: { type: "spring", duration: 0.8 },
         }}
         exit={{ opacity: 0, y: -5 }}
-        className="bg-[#212121] z-20 border border-[#696969] absolute w-full left-0 top-full mt-2 rounded-xl py-2 dropRes"
+        className="bg-[#212121] border border-[#696969] absolute w-full left-0 top-full mt-2 rounded-xl py-2 dropRes z-50"
       >
-        <div
-          className="flex flex-col pt-1 "
-          onMouseLeave={() => {
-            console.log(false);
-            setHov(false);
-          }}
-        >
+        <div className="flex flex-col pt-1 ">
           {choices.map((item) => (
             <button
-              key={`Choice${item}`}
+              key={`Choice${Math.random() * 9999}`}
               className="text-sm text-left text-white px-3 py-1 border-l-2 border-transparent hover:border-[#31742b] hover:bg-[#454545] transition-all duration-200"
               onClick={() => {
                 stateSet(item);
@@ -325,15 +389,36 @@ const DropdownMenu: React.FC<DropProps> = ({ choices, stateSet, setHov }) => {
   );
 };
 
-export const AddCourse = () => {
+export const AddCourse: React.FC<addProps> = ({
+  publisherEmail,
+  publisherName,
+}) => {
   const [openModal, setOpenModal] = useState(false);
   return (
     <>
       <AnimatePresence>
         {openModal && <Overlay key={"OverlayMod"} stateSet={setOpenModal} />}
-        {openModal && <ModalAdd key={"AddModal"} stateSet={setOpenModal} />}
+        {openModal && (
+          <ModalAdd
+            key={"AddModal"}
+            stateSet={setOpenModal}
+            publisherEmail={publisherEmail}
+            publisherName={publisherName}
+          />
+        )}
         <motion.div
           whileHover={{ scale: 1.08, transition: { duration: 0.3 } }}
+          initial={{ opacity: 0, x: -30 }}
+          animate={{
+            opacity: 1,
+            x: 0,
+            transition: {
+              type: "spring",
+              duration: 0.6,
+              delay: 0.15,
+              bounce: 0.4,
+            },
+          }}
           className="bg-[#DDDDDD30] rounded-lg flex flex-col w-56 h-48 overflow-hidden shrink-0 border-4 border-dashed justify-center items-center"
           onClick={() => setOpenModal(true)}
         >
