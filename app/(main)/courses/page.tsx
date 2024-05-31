@@ -15,7 +15,6 @@ const popp = Poppins({ weight: "400", subsets: ["latin"] });
 
 const CoursePage = async () => {
   const sesh = await auth();
-  console.log(sesh);
   await connectToDb();
   const courses = await getAllCourses();
   let delay = 0;
@@ -56,15 +55,6 @@ const CoursePage = async () => {
             ) : (
               <EmptySection />
             )}
-
-            {/* <CoursePill delayTime={0.15} />
-            <CoursePill delayTime={0.3} />
-            <CoursePill delayTime={0.45} />
-            <CoursePill delayTime={0.6} />
-            <CoursePill delayTime={0.75} />
-            <CoursePill delayTime={0.9} />
-            <CoursePill delayTime={1.05} />
-            <CoursePill delayTime={1.2} /> */}
           </div>
         </div>
         <div className={" grid px-3 w-full " + popp.className}>

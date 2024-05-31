@@ -27,6 +27,5 @@ export const createCourse = (values: Record<string, any>) =>
 export const findCourseByCode = (code: string) => courseModel.findOne({ code });
 
 export const updateCourseByCode = (code: string, values: Record<string, any>) =>
-  courseModel.findByIdAndUpdate({ code: code }, values, { new: true });
-
+  courseModel.findOneAndUpdate({ code: code }, values, { new: true });
 export const getAllCourses = () => courseModel.find();

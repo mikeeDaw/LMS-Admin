@@ -28,16 +28,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
     },
     async session({ token, session, user }) {
-      // console.log({
-      //   sessionToken: token,
-      //   session,
-      // });
-      // console.log("USER", user);
-
-      // if (token.sub && session.user) {
-      //   session.user.id = token.sub;
-      //   session.user.name = token.userData.fName
-      // }
       if (token && token.user) {
         session.user.name = token.user.name;
       }
@@ -45,10 +35,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session;
     },
     async jwt({ token, user }) {
-      // console.log("token:", token);
-      console.log("JWT", user, token);
-
-      // console.log("User:", user);
       return token;
     },
   },

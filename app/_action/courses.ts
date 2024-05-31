@@ -33,10 +33,15 @@ export const addCourse = async (vals: Course) => {
 export const updateCourse = async (vals: any) => {
   await connectToDb();
 
+  console.log("updacor");
   try {
     const res = await updateCourseByCode(vals.code, vals);
-
-    return { error: false, msg: "Update Was Successful" };
+    console.log(res);
+    return {
+      error: false,
+      msg: "Update Was Successful",
+      data: JSON.parse(JSON.stringify(res)),
+    };
   } catch (error) {
     console.log(error);
     return { errors: true, msg: "Error happended :(" };

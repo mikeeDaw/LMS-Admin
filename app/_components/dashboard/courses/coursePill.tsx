@@ -4,10 +4,10 @@ import {
   Bird,
   Check,
   ChevronDown,
+  CircleCheckBig,
   CircleChevronRight,
   Pencil,
   Puzzle,
-  Rabbit,
   Sparkles,
   Sprout,
   Swords,
@@ -18,6 +18,8 @@ import { Bebas_Neue, Poppins } from "next/font/google";
 import React, { ReactNode, useState } from "react";
 import { Overlay } from "../../modals/courseModals";
 import { Course } from "@/app/_types";
+import { updateCourse } from "@/app/_action/courses";
+import { toast } from "sonner";
 
 const bebas = Bebas_Neue({ weight: "400", subsets: ["latin"] });
 const popp = Poppins({ weight: "400", subsets: ["latin"] });
@@ -72,7 +74,7 @@ const diffIcon = (diff: string, size: number) => {
 
 const CoursePill: React.FC<PillProps> = ({ delayTime, data }) => {
   const [showDet, setShowDet] = useState(false);
-  console.log(data);
+
   return (
     <>
       <motion.div
@@ -168,6 +170,41 @@ const DetailsModal: React.FC<DescModal> = ({ stateSet, data }) => {
     setDiff(data.diff);
   };
 
+  const submitUpdate = async () => {
+    const res = await updateCourse({
+      code: data.code,
+      title,
+      desc,
+      tags,
+      tier,
+      diff,
+    });
+    if (!res.error) {
+      toast.error("Update Success!", {
+        position: "top-center",
+        duration: 3000,
+        description: `Updates on ${data.code} has been saved.`,
+        icon: (
+          <span className="text-[#ffffff]">
+            <CircleCheckBig />
+          </span>
+        ),
+        classNames: {
+          toast: "bg-emerald-400 border-none",
+          title: "ms-4 text-white text-sm",
+          description: "ms-4 text-white",
+        },
+      });
+      console.log(res.data);
+      data.tags = res.data.tags;
+      data.tier = res.data.tier;
+      data.title = res.data.title;
+      data.diff = res.data.diff;
+      data.desc = res.data.desc;
+    }
+
+    setEditing(false);
+  };
   const pressEntr = (e: any) => {
     if (e.key == "Enter") {
       const val = e.target.value;
@@ -308,7 +345,10 @@ const DetailsModal: React.FC<DescModal> = ({ stateSet, data }) => {
                 animate={{ opacity: 1, transition: { duration: 0.5 } }}
                 className="absolute top-0 right-3 flex flex-col gap-2"
               >
-                <button className="p-2.5 bg-green-400 rounded-full text-white">
+                <button
+                  className="p-2.5 bg-green-400 rounded-full text-white"
+                  onClick={submitUpdate}
+                >
                   <Check size={20} />
                 </button>
                 <button

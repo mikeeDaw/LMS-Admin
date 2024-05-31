@@ -132,6 +132,7 @@ export const ModalAdd: React.FC<AddModal> = ({
         setDiffVal("Beginner");
         setTag("");
       }
+      console.log(res);
     }
   };
 
