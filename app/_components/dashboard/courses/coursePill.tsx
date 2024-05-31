@@ -1,34 +1,74 @@
 "use client";
-import React, { useState } from "react";
-import { AnimatePresence, interpolate, motion } from "framer-motion";
-import { CircleX, Lollipop, Plus, Rabbit } from "lucide-react";
-import { Overlay } from "../../modals/courseModals";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  Bird,
+  Check,
+  ChevronDown,
+  CircleChevronRight,
+  Pencil,
+  Puzzle,
+  Rabbit,
+  Sparkles,
+  Sprout,
+  Swords,
+  Tent,
+  X,
+} from "lucide-react";
 import { Bebas_Neue, Poppins } from "next/font/google";
-import { Toaster } from "sonner";
+import React, { ReactNode, useState } from "react";
+import { Overlay } from "../../modals/courseModals";
+import { Course } from "@/app/_types";
 
 const bebas = Bebas_Neue({ weight: "400", subsets: ["latin"] });
+const popp = Poppins({ weight: "400", subsets: ["latin"] });
 
-interface Course {
-  title: string;
-  code: string;
-  desc: string;
-  tags: string[];
-  tier: string;
-  diff: string;
-  publisherEmail: string;
-  publisherName: string;
-  students: string[];
-  published: false;
+interface CourseProp {
+  data: Course;
 }
 
-interface PillProps {
+interface PillProps extends CourseProp {
   delayTime: number;
-  data: Course;
 }
 
 interface StateBoolProps {
   stateSet: React.Dispatch<React.SetStateAction<boolean>>;
 }
+
+interface DescModal extends CourseProp, StateBoolProps {}
+
+interface TagProp {
+  text: string;
+  disable: boolean;
+  setTag: React.Dispatch<React.SetStateAction<string[]>>;
+}
+interface DropProp {
+  text: string;
+  setText: React.Dispatch<React.SetStateAction<string>>;
+  options: string[];
+  editing: boolean;
+  icon: ReactNode;
+}
+
+const tierIcon = (tier: string, size: number) => {
+  switch (tier.toUpperCase()) {
+    case "FREE":
+      return <Bird size={size} />;
+    case "PREMIUM":
+      return <Tent size={size} />;
+    case "ASTRO":
+      return <Sparkles size={size} />;
+  }
+};
+const diffIcon = (diff: string, size: number) => {
+  switch (diff.toUpperCase()) {
+    case "NOVICE":
+      return <Sprout size={size} />;
+    case "AMATEUR":
+      return <Puzzle size={size} />;
+    case "MASTER":
+      return <Swords size={size} />;
+  }
+};
 
 const CoursePill: React.FC<PillProps> = ({ delayTime, data }) => {
   const [showDet, setShowDet] = useState(false);
@@ -55,7 +95,7 @@ const CoursePill: React.FC<PillProps> = ({ delayTime, data }) => {
       >
         {/* Tier Badge */}
         <span className="bg-yellow-300 absolute rounded-full p-1 text-[#333] right-3 top-3">
-          <Rabbit size={23} />
+          {tierIcon(data.tier, 23)}
         </span>
         <span className=" w-full h-1/2 relative "></span>
         <div className="flex flex-col w-full justify-end px-2 py-1 h-full">
@@ -76,7 +116,7 @@ const CoursePill: React.FC<PillProps> = ({ delayTime, data }) => {
         </div>
       </motion.div>
       <AnimatePresence>
-        {showDet && <DetailsModal stateSet={setShowDet} />}
+        {showDet && <DetailsModal stateSet={setShowDet} data={data} />}
       </AnimatePresence>
     </>
   );
@@ -112,7 +152,32 @@ const EmptySection = () => {
   );
 };
 
-const DetailsModal: React.FC<StateBoolProps> = ({ stateSet }) => {
+const DetailsModal: React.FC<DescModal> = ({ stateSet, data }) => {
+  const [title, setTitle] = useState(data.title);
+  const [desc, setDesc] = useState(data.desc);
+  const [tags, setTags] = useState(data.tags);
+  const [tier, setTier] = useState(data.tier);
+  const [diff, setDiff] = useState(data.diff);
+  const [editing, setEditing] = useState(false);
+
+  const resetForm = () => {
+    setTitle(data.title);
+    setDesc(data.desc);
+    setTags(data.tags);
+    setTier(data.tier);
+    setDiff(data.diff);
+  };
+
+  const pressEntr = (e: any) => {
+    if (e.key == "Enter") {
+      const val = e.target.value;
+      console.log(e.target.value);
+      if (val !== "") {
+        setTags([...tags, val]);
+        e.target.value = "";
+      }
+    }
+  };
   return (
     <>
       <Overlay stateSet={stateSet} />
@@ -122,32 +187,250 @@ const DetailsModal: React.FC<StateBoolProps> = ({ stateSet }) => {
           opacity: 1,
           scale: 1,
           transition: {
-            duration: 0.6,
+            duration: 0.7,
             type: "spring",
-            bounce: 0.5,
+            bounce: 0.4,
           },
         }}
         exit={{ opacity: 0, scale: 0 }}
         className="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] flex w-3/6 xl:w-[60%] h-3/4 z-30 rounded-xl bg-white"
       >
-        <div className="w-1/2 h-full p-3 pt-5 relative">
-          <div className="flex w-full">but</div>
+        <div className="w-1/2 h-full p-5 relative flex flex-col justify-between">
+          <div className="flex gap-4 flex-col">
+            {/* Tags */}
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-wrap">
+                <AnimatePresence>
+                  {tags.map((tag, idx) => (
+                    <Tags
+                      text={tag}
+                      disable={!editing}
+                      setTag={setTags}
+                      key={`Tagg${tag}`}
+                    />
+                  ))}
+                </AnimatePresence>
+              </div>
+              <AnimatePresence>
+                {editing && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1, transition: { duration: 0.5 } }}
+                    exit={{ opacity: 0 }}
+                    className="flex items-center bg-[#a4f3b0] rounded-lg px-3"
+                  >
+                    <span
+                      className={
+                        "text-base tracking-wide pe-3 " + bebas.className
+                      }
+                    >
+                      Tags
+                    </span>
+                    <input
+                      type="text"
+                      name="newTag"
+                      className="outline-none text-sm p-2 grow bg-transparent"
+                      onKeyDown={pressEntr}
+                      autoComplete="off"
+                    />
+                    <span className="text-[#545454]">
+                      <CircleChevronRight size={20} />
+                    </span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Description */}
+            <div className="flex w-full flex-col">
+              <span className={"text-lg text-[#818181] " + bebas.className}>
+                Description
+              </span>
+              <textarea
+                className={
+                  "outline-0 bg-transparent text-sm w-full resize-none transition-all duration-200 " +
+                  popp.className +
+                  (editing ? " text-[#319e42]" : " text-black")
+                }
+                wrap="soft"
+                value={desc}
+                rows={5}
+                onChange={(e) => setDesc(e.target.value)}
+                disabled={!editing}
+              />
+            </div>
+          </div>
+
+          {/* Tier and Difficulty */}
+          <div className="flex justify-evenly w-full gap-3 pb-2">
+            <OptDrop
+              text={tier}
+              setText={setTier}
+              options={["Free", "Premium", "Astro"]}
+              editing={editing}
+              icon={tierIcon(tier, 25)}
+            />
+
+            <span className="h-full w-[1px] bg-[#d8d8d8]" />
+
+            <OptDrop
+              text={diff}
+              setText={setDiff}
+              options={["Novice", "Amateur", "Master"]}
+              editing={editing}
+              icon={diffIcon(diff, 25)}
+            />
+          </div>
         </div>
-        <div className="w-1/2 h-full bg-[url('/assets/images/waves.png')] p-3 pt-5 bg-cover rounded-r-xl relative">
-          {/* <span className="absolute top-3 right-5 text-red-500 flex flex-col p-3">
-            <CircleX size={30} />
-          </span> */}
-          <textarea
-            className={
-              "outline-0 bg-transparent text-white w-full text-2xl resize-none " +
-              bebas.className
-            }
-            wrap="soft"
-            value={"Title Here sdfsdjfshe owruoiruwoiruofdgdieru "}
-          />
+
+        {/* Right Side */}
+        <div className="w-1/2 h-full bg-[url('/assets/images/waves.png')] p-3 pt-5 bg-cover rounded-r-xl flex flex-col gap-1 relative">
+          {/* Title & Code + Edit Btn */}
+          <div className="relative">
+            <span className={"text-white " + popp.className}>{data.code}</span>
+            <textarea
+              className={
+                "outline-0 bg-transparent w-full text-2xl resize-none pe-24 transition-all duration-200 " +
+                bebas.className +
+                (editing ? " text-[#5ce671]" : " text-white")
+              }
+              wrap="soft"
+              value={title}
+              onChange={(e) => {
+                setTitle(e.target.value);
+              }}
+              disabled={!editing}
+            />
+
+            {editing ? (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1, transition: { duration: 0.5 } }}
+                className="absolute top-0 right-3 flex flex-col gap-2"
+              >
+                <button className="p-2.5 bg-green-400 rounded-full text-white">
+                  <Check size={20} />
+                </button>
+                <button
+                  className="p-2.5 bg-red-500 rounded-full text-white"
+                  onClick={() => {
+                    resetForm();
+                    setEditing(false);
+                  }}
+                >
+                  <X size={20} />
+                </button>
+              </motion.div>
+            ) : (
+              <motion.button
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1, transition: { duration: 0.5 } }}
+                className="absolute top-0 right-3 text-white p-2.5 border border-white rounded-full hover:bg-[#5dd788] hover:text-black hover:border-transparent transition-all duration-200"
+                onClick={() => setEditing(true)}
+              >
+                <Pencil size={20} />
+              </motion.button>
+            )}
+          </div>
+          {/* Published */}
+          <button className="absolute bottom-5 right-6 bg-white rounded-full px-4 py-1 text-sm">
+            Publish
+          </button>
         </div>
       </motion.div>
     </>
+  );
+};
+
+const Tags: React.FC<TagProp> = ({ text, disable, setTag }) => {
+  const clickTag = (name: string) => {
+    setTag((taggers) => taggers.filter((item) => item !== name));
+  };
+  return (
+    <motion.button
+      initial={{ opacity: 0, x: -20 }}
+      animate={{
+        opacity: 1,
+        x: 0,
+        transition: { duration: 0.5, type: "spring", delay: 0.3 },
+      }}
+      exit={{ opacity: 0, x: -20 }}
+      disabled={disable}
+      onClick={() => clickTag(text)}
+      className="p-1"
+    >
+      <div className="bg-[#5ac56a] py-1 px-4 text-sm text-white rounded-full">
+        {text}
+      </div>
+    </motion.button>
+  );
+};
+
+const OptDrop: React.FC<DropProp> = ({
+  text,
+  setText,
+  options,
+  editing,
+  icon,
+}) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="flex flex-col gap-1 w-1/2 items-center pb-2">
+      <span className={"text-lg text-[#818181] " + bebas.className}>Tier</span>
+      <div
+        className={
+          "flex items-center gap-3 relative  " +
+          (editing ? "cursor-pointer text-[#319e42]" : "")
+        }
+        onClick={
+          editing
+            ? () => {
+                setOpen(!open);
+              }
+            : () => {}
+        }
+      >
+        <span className={editing ? "text-[#319e42]" : "text-[#686868]"}>
+          {icon}
+        </span>
+        <div className="border border-transparent p-1 pe-0">
+          <span className={"text-lg"}> {text} </span>
+        </div>
+        <AnimatePresence>
+          {editing && (
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1, transition: { duration: 0.6 } }}
+              exit={{ opacity: 0 }}
+            >
+              <ChevronDown size={20} />
+            </motion.span>
+          )}
+
+          {open && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1, transition: { duration: 0.6 } }}
+              exit={{ opacity: 0 }}
+              className="absolute left-[110%] bg-[#2c2c2c] py-2 flex flex-col items-start rounded-lg z-50"
+              key={`${text}+${Math.random() * 999}`}
+            >
+              {options.map((opt) => (
+                <button
+                  className="ps-4 pe-8 py-0.5 text-sm w-full text-start text-white border-l-2 border-transparent transition-all hover:border-[#82e991] hover:bg-[#285c30]"
+                  onClick={() => {
+                    setText(opt);
+                    setOpen(false);
+                  }}
+                >
+                  {opt}
+                </button>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
   );
 };
 

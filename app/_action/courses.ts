@@ -1,9 +1,14 @@
 "use server";
 
-import { createCourse, findCourseByCode } from "../_models/courseModel";
+import {
+  createCourse,
+  findCourseByCode,
+  updateCourseByCode,
+} from "../_models/courseModel";
+import { Course } from "../_types";
 import { connectToDb } from "../lib/mongoose";
 
-export const addCourse = async (vals: any) => {
+export const addCourse = async (vals: Course) => {
   await connectToDb();
 
   const existingCourse = await findCourseByCode(vals.code);
@@ -22,5 +27,18 @@ export const addCourse = async (vals: any) => {
   } catch (error) {
     console.log(error);
     return { error: error };
+  }
+};
+
+export const updateCourse = async (vals: any) => {
+  await connectToDb();
+
+  try {
+    const res = await updateCourseByCode(vals.code, vals);
+
+    return { error: false, msg: "Update Was Successful" };
+  } catch (error) {
+    console.log(error);
+    return { errors: true, msg: "Error happended :(" };
   }
 };

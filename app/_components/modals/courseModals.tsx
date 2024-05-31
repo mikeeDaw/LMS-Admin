@@ -57,7 +57,7 @@ export const ModalAdd: React.FC<AddModal> = ({
   const [theTags, setTheTags] = useState<string[]>([]);
   const [clickDiff, setClickDiff] = useState(false);
   const [clickTier, setClickTier] = useState(false);
-  const [diffVal, setDiffVal] = useState("Beginner");
+  const [diffVal, setDiffVal] = useState("Novice");
   const [tierVal, setTierVal] = useState("Free");
 
   const pressEntr = (e: any) => {
@@ -258,7 +258,7 @@ export const ModalAdd: React.FC<AddModal> = ({
                   exit={{ opacity: 0, x: -10 }}
                   key={`Tag${item}`}
                   onClick={() => clickTag(item)}
-                  className="bg-[#ffffffe2] py-2 ps-4 pe-3 text-sm rounded-full flex items-center gap-2"
+                  className="bg-[#ffffffe2] py-2 ps-4 pe-3 text-sm rounded-full flex items-center gap-2 text-nowrap"
                 >
                   <span>{item}</span>
                   <span className="translate-y-[1px]">
@@ -343,7 +343,7 @@ export const ModalAdd: React.FC<AddModal> = ({
                 {clickDiff && (
                   <DropdownMenu
                     key={"DiffDrop"}
-                    choices={["Beginner", "Amateur", "Professional"]}
+                    choices={["Novice", "Amateur", "Master"]}
                     stateSet={setDiffVal}
                     setHov={setClickDiff}
                   />

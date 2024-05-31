@@ -43,6 +43,11 @@
   animation: l 1s steps(4) infinite;
 }
 
+.optDrop::before {
+  content: "";
+  @apply absolute p-2 bg-black;
+}
+
 @keyframes l {
   to {
     clip-path: inset(0 -0.7ch 0 0);
