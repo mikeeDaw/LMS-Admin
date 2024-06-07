@@ -28,4 +28,15 @@ export const findCourseByCode = (code: string) => courseModel.findOne({ code });
 
 export const updateCourseByCode = (code: string, values: Record<string, any>) =>
   courseModel.findOneAndUpdate({ code: code }, values, { new: true });
+
 export const getAllCourses = () => courseModel.find();
+
+export const publishCourseByCode = (code: string, toStat: boolean) =>
+  courseModel.findOneAndUpdate(
+    { code: code },
+    { published: toStat },
+    { new: true }
+  );
+
+export const deleteCourseByCode = (code: string) =>
+  courseModel.findOneAndDelete({ code: code });

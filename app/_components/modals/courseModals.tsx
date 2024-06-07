@@ -12,6 +12,7 @@ import React, { useEffect, useState } from "react";
 import { Bebas_Neue } from "next/font/google";
 import { addCourse } from "@/app/_action/courses";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const bebas = Bebas_Neue({ weight: "400", subsets: ["latin"] });
 
@@ -59,6 +60,7 @@ export const ModalAdd: React.FC<AddModal> = ({
   const [clickTier, setClickTier] = useState(false);
   const [diffVal, setDiffVal] = useState("Novice");
   const [tierVal, setTierVal] = useState("Free");
+  const router = useRouter();
 
   const pressEntr = (e: any) => {
     if (e.key == "Enter") {
@@ -131,6 +133,12 @@ export const ModalAdd: React.FC<AddModal> = ({
         setTierVal("Free");
         setDiffVal("Beginner");
         setTag("");
+        setTimeout(() => {
+          stateSet(false);
+        }, 800);
+        setTimeout(() => {
+          router.refresh();
+        }, 1000);
       }
       console.log(res);
     }

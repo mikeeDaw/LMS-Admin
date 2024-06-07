@@ -2,7 +2,9 @@
 
 import {
   createCourse,
+  deleteCourseByCode,
   findCourseByCode,
+  publishCourseByCode,
   updateCourseByCode,
 } from "../_models/courseModel";
 import { Course } from "../_types";
@@ -33,7 +35,6 @@ export const addCourse = async (vals: Course) => {
 export const updateCourse = async (vals: any) => {
   await connectToDb();
 
-  console.log("updacor");
   try {
     const res = await updateCourseByCode(vals.code, vals);
     console.log(res);
@@ -45,5 +46,36 @@ export const updateCourse = async (vals: any) => {
   } catch (error) {
     console.log(error);
     return { errors: true, msg: "Error happended :(" };
+  }
+};
+
+export const publishCourse = async (code: string, toWhat: boolean) => {
+  await connectToDb();
+
+  try {
+    const res = await publishCourseByCode(code, toWhat);
+    console.log(res);
+    return {
+      error: false,
+      msg: `Course was ${toWhat ? "Published" : "Unpublished"}.`,
+      data: JSON.parse(JSON.stringify(res)),
+    };
+  } catch (error) {
+    console.log(error);
+    return { errors: true, msg: "Error happended :(" };
+  }
+};
+
+export const deleteCourse = async (code: string) => {
+  await connectToDb();
+
+  try {
+    const res = await deleteCourseByCode(code);
+    return {
+      error: false,
+      msg: `${code} was Successfully deleted.`,
+    };
+  } catch (error) {
+    return { error: true, msg: "Error in Deleting :(" };
   }
 };

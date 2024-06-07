@@ -12,14 +12,20 @@ import {
   Sprout,
   Swords,
   Tent,
+  Trash,
   X,
 } from "lucide-react";
 import { Bebas_Neue, Poppins } from "next/font/google";
 import React, { ReactNode, useState } from "react";
 import { Overlay } from "../../modals/courseModals";
 import { Course } from "@/app/_types";
-import { updateCourse } from "@/app/_action/courses";
+import {
+  deleteCourse,
+  publishCourse,
+  updateCourse,
+} from "@/app/_action/courses";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const bebas = Bebas_Neue({ weight: "400", subsets: ["latin"] });
 const popp = Poppins({ weight: "400", subsets: ["latin"] });
@@ -44,6 +50,7 @@ interface TagProp {
   setTag: React.Dispatch<React.SetStateAction<string[]>>;
 }
 interface DropProp {
+  label: string;
   text: string;
   setText: React.Dispatch<React.SetStateAction<string>>;
   options: string[];
@@ -155,12 +162,14 @@ const EmptySection = () => {
 };
 
 const DetailsModal: React.FC<DescModal> = ({ stateSet, data }) => {
+  const router = useRouter();
   const [title, setTitle] = useState(data.title);
   const [desc, setDesc] = useState(data.desc);
   const [tags, setTags] = useState(data.tags);
   const [tier, setTier] = useState(data.tier);
   const [diff, setDiff] = useState(data.diff);
   const [editing, setEditing] = useState(false);
+  const [delModal, setDelModal] = useState(false);
 
   const resetForm = () => {
     setTitle(data.title);
@@ -168,6 +177,63 @@ const DetailsModal: React.FC<DescModal> = ({ stateSet, data }) => {
     setTags(data.tags);
     setTier(data.tier);
     setDiff(data.diff);
+  };
+
+  const deleteTheCourse = async (code: string) => {
+    const res = await deleteCourse(code);
+    if (!res.error) {
+      toast("Deletion Success!", {
+        position: "top-center",
+        duration: 3000,
+        description: `${code} has been deleted.`,
+        icon: (
+          <span className="text-[#ffffff]">
+            <CircleCheckBig />
+          </span>
+        ),
+        classNames: {
+          toast: "bg-emerald-400 border-none",
+          title: "ms-4 text-white text-sm",
+          description: "ms-4 text-white",
+        },
+      });
+      setTimeout(() => {
+        stateSet(false);
+      }, 800);
+      setTimeout(() => {
+        router.refresh();
+      }, 1000);
+    }
+  };
+
+  const publishSubmit = async (to: boolean) => {
+    const res = await publishCourse(data.code, to);
+    if (!res.error) {
+      toast("Update Success!", {
+        position: "top-center",
+        duration: 3000,
+        description: `${data.code} has been ${
+          to ? "Published" : "Unpublished"
+        }.`,
+        icon: (
+          <span className="text-[#ffffff]">
+            <CircleCheckBig />
+          </span>
+        ),
+        classNames: {
+          toast: "bg-emerald-400 border-none",
+          title: "ms-4 text-white text-sm",
+          description: "ms-4 text-white",
+        },
+      });
+      setTimeout(() => {
+        stateSet(false);
+      }, 800);
+      setTimeout(() => {
+        router.refresh();
+      }, 1000);
+      console.log(res.data);
+    }
   };
 
   const submitUpdate = async () => {
@@ -205,6 +271,7 @@ const DetailsModal: React.FC<DescModal> = ({ stateSet, data }) => {
 
     setEditing(false);
   };
+
   const pressEntr = (e: any) => {
     if (e.key == "Enter") {
       const val = e.target.value;
@@ -215,6 +282,7 @@ const DetailsModal: React.FC<DescModal> = ({ stateSet, data }) => {
       }
     }
   };
+
   return (
     <>
       <Overlay stateSet={stateSet} />
@@ -230,10 +298,11 @@ const DetailsModal: React.FC<DescModal> = ({ stateSet, data }) => {
           },
         }}
         exit={{ opacity: 0, scale: 0 }}
-        className="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] flex w-3/6 xl:w-[60%] h-3/4 z-30 rounded-xl bg-white"
+        className="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] flex w-4/6 xl:w-[60%] h-3/4 z-30 rounded-xl bg-white"
       >
-        <div className="w-1/2 h-full p-5 relative flex flex-col justify-between">
-          <div className="flex gap-4 flex-col">
+        {/* Left Side */}
+        <div className="w-1/2 h-full p-5 relative flex flex-col justify-between gap-2">
+          <div className="flex gap-2 flex-col grow">
             {/* Tags */}
             <div className="flex flex-col gap-3">
               <div className="flex flex-wrap">
@@ -296,11 +365,23 @@ const DetailsModal: React.FC<DescModal> = ({ stateSet, data }) => {
                 disabled={!editing}
               />
             </div>
+
+            {/* Students */}
+            <div className="flex w-full grow flex-col">
+              <span className={"text-lg text-[#818181] " + bebas.className}>
+                Students
+              </span>
+              <div className="h-full w-full bg-red-300">
+                <div>John Doe</div>
+                <h1>SSS</h1>
+              </div>
+            </div>
           </div>
 
           {/* Tier and Difficulty */}
           <div className="flex justify-evenly w-full gap-3 pb-2">
             <OptDrop
+              label="Tier"
               text={tier}
               setText={setTier}
               options={["Free", "Premium", "Astro"]}
@@ -311,6 +392,7 @@ const DetailsModal: React.FC<DescModal> = ({ stateSet, data }) => {
             <span className="h-full w-[1px] bg-[#d8d8d8]" />
 
             <OptDrop
+              label="Difficulty"
               text={diff}
               setText={setDiff}
               options={["Novice", "Amateur", "Master"]}
@@ -365,17 +447,73 @@ const DetailsModal: React.FC<DescModal> = ({ stateSet, data }) => {
               <motion.button
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1, transition: { duration: 0.5 } }}
-                className="absolute top-0 right-3 text-white p-2.5 border border-white rounded-full hover:bg-[#5dd788] hover:text-black hover:border-transparent transition-all duration-200"
+                className="absolute top-0 right-3 text-white p-2.5 border disabled:pointer-events-none disabled:text-[#ffffff50] disabled:border-[#ffffff50] border-white rounded-full hover:bg-[#5dd788] hover:text-black hover:border-transparent transition-all duration-200"
                 onClick={() => setEditing(true)}
+                disabled={data.published}
               >
                 <Pencil size={20} />
               </motion.button>
             )}
           </div>
-          {/* Published */}
-          <button className="absolute bottom-5 right-6 bg-white rounded-full px-4 py-1 text-sm">
-            Publish
+          {/* Delete */}
+          <button
+            className="absolute bottom-5 left-6"
+            onClick={() => setDelModal(true)}
+          >
+            <span className="text-[#ff7070]">
+              <Trash />
+            </span>
           </button>
+          {/* Publish */}
+          <button
+            className="absolute bottom-5 right-6 bg-white rounded-full px-4 py-1 text-sm"
+            onClick={
+              data.published
+                ? () => {
+                    publishSubmit(false);
+                  }
+                : () => {
+                    publishSubmit(true);
+                  }
+            }
+          >
+            {data.published ? "Unpublish" : "Publish"}
+          </button>
+          {/* Delete Confirm */}
+          <AnimatePresence>
+            {delModal && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0, x: "-50%", y: "-50%" }}
+                animate={{
+                  opacity: 1,
+                  scale: 1,
+                  transition: {
+                    duration: 0.7,
+                    type: "spring",
+                    bounce: 0.4,
+                  },
+                }}
+                exit={{ opacity: 0, scale: 0 }}
+                className="absolute bg-white left-1/2 top-1/2 py-3 px-5 shadow rounded-xl flex flex-col gap-3"
+              >
+                <span> Confirm Deletion? </span>
+                <div className="flex gap-2">
+                  <button
+                    className="rounded-xl bg-[#acacac] px-4 text-white py-1"
+                    onClick={() => setDelModal(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="rounded-xl bg-red-500 px-4 text-white py-1"
+                    onClick={() => deleteTheCourse(data.code)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </motion.div>
     </>
@@ -407,6 +545,7 @@ const Tags: React.FC<TagProp> = ({ text, disable, setTag }) => {
 };
 
 const OptDrop: React.FC<DropProp> = ({
+  label,
   text,
   setText,
   options,
@@ -416,7 +555,9 @@ const OptDrop: React.FC<DropProp> = ({
   const [open, setOpen] = useState(false);
   return (
     <div className="flex flex-col gap-1 w-1/2 items-center pb-2">
-      <span className={"text-lg text-[#818181] " + bebas.className}>Tier</span>
+      <span className={"text-lg text-[#818181] " + bebas.className}>
+        {label}
+      </span>
       <div
         className={
           "flex items-center gap-3 relative  " +
