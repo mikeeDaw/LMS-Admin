@@ -24,6 +24,7 @@
   @apply text-black;
 }
 
+/* Scrollbars */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
@@ -31,6 +32,19 @@
 .scrollbar-hide {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
+}
+
+.customScroll::-webkit-scrollbar-track {
+  border-radius: 10px;
+  background-color: #d6d6d6;
+}
+.customScroll::-webkit-scrollbar {
+  width: 7px;
+  background-color: #d6d6d6;
+}
+.customScroll::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: #34c368;
 }
 
 .dropRes::before {

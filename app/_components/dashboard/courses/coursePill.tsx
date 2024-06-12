@@ -6,6 +6,8 @@ import {
   ChevronDown,
   CircleCheckBig,
   CircleChevronRight,
+  CircleX,
+  Ghost,
   Pencil,
   Puzzle,
   Sparkles,
@@ -13,15 +15,18 @@ import {
   Swords,
   Tent,
   Trash,
+  UserRoundX,
   X,
 } from "lucide-react";
 import { Bebas_Neue, Poppins } from "next/font/google";
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { Overlay } from "../../modals/courseModals";
 import { Course } from "@/app/_types";
 import {
   deleteCourse,
+  getStudents,
   publishCourse,
+  unenrollStudent,
   updateCourse,
 } from "@/app/_action/courses";
 import { toast } from "sonner";
@@ -36,13 +41,16 @@ interface CourseProp {
 
 interface PillProps extends CourseProp {
   delayTime: number;
+  email: string;
 }
 
 interface StateBoolProps {
   stateSet: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-interface DescModal extends CourseProp, StateBoolProps {}
+interface DescModal extends CourseProp, StateBoolProps {
+  email: string;
+}
 
 interface TagProp {
   text: string;
@@ -79,9 +87,8 @@ const diffIcon = (diff: string, size: number) => {
   }
 };
 
-const CoursePill: React.FC<PillProps> = ({ delayTime, data }) => {
+const CoursePill: React.FC<PillProps> = ({ delayTime, data, email }) => {
   const [showDet, setShowDet] = useState(false);
-
   return (
     <>
       <motion.div
@@ -106,26 +113,21 @@ const CoursePill: React.FC<PillProps> = ({ delayTime, data }) => {
         <span className="bg-yellow-300 absolute rounded-full p-1 text-[#333] right-3 top-3">
           {tierIcon(data.tier, 23)}
         </span>
-        <span className=" w-full h-1/2 relative "></span>
+        <span className=" w-full h-1/2 relative pe-12 "></span>
         <div className="flex flex-col w-full justify-end px-2 py-1 h-full">
           <div className="flex flex-col">
-            {/* <div className="flex flex-wrap">
-              {data.tags.map((item) => (
-                <div className="p-0.5">
-                  <div className="text-[9px] p-1 px-2 rounded-full bg-white">
-                    {" "}
-                    {item}{" "}
-                  </div>{" "}
-                </div>
-              ))}
-            </div> */}
+            {/* <span className="text-xs bg-[#ffffffA9] self-start px-2 py-0.5 rounded-lg">
+              {data.publisherName}
+            </span> */}
             <span className="text-white truncate pe-5">{data.title}</span>
-            <span className="text-[#c0c0c0] text-xs mt-0.5">{`${data.students.length} Students`}</span>
+            <span className="text-[#c0c0c0] text-xs mt-0.5">{`${data.students.length} Students • ${data.publisherName}`}</span>
           </div>
         </div>
       </motion.div>
       <AnimatePresence>
-        {showDet && <DetailsModal stateSet={setShowDet} data={data} />}
+        {showDet && (
+          <DetailsModal stateSet={setShowDet} data={data} email={email} />
+        )}
       </AnimatePresence>
     </>
   );
@@ -161,7 +163,7 @@ const EmptySection = () => {
   );
 };
 
-const DetailsModal: React.FC<DescModal> = ({ stateSet, data }) => {
+const DetailsModal: React.FC<DescModal> = ({ stateSet, data, email }) => {
   const router = useRouter();
   const [title, setTitle] = useState(data.title);
   const [desc, setDesc] = useState(data.desc);
@@ -170,6 +172,39 @@ const DetailsModal: React.FC<DescModal> = ({ stateSet, data }) => {
   const [diff, setDiff] = useState(data.diff);
   const [editing, setEditing] = useState(false);
   const [delModal, setDelModal] = useState(false);
+  const [students, setStudents] = useState([]);
+  const [moduleTab, setModuleTab] = useState(true);
+  const [openUnenr, setOpenUnenr] = useState(false);
+  const [delId, setDelId] = useState("");
+  const [delName, setDelName] = useState("");
+  const creator = data.publisherEmail === email;
+
+  const getTheStud = async (studentIds: string[]) => {
+    const val = await getStudents(studentIds);
+    setStudents(val.data);
+  };
+
+  useEffect(() => {
+    getTheStud(data.students);
+  }, []);
+
+  const displayError = (title: string, desc: string) => {
+    toast.error(title, {
+      position: "top-center",
+      duration: 3000,
+      description: desc,
+      icon: (
+        <span className="text-[#ffffff]">
+          <CircleX />
+        </span>
+      ),
+      classNames: {
+        toast: "bg-red-400 border-none",
+        title: "ms-3 text-white",
+        description: "ms-3 text-white",
+      },
+    });
+  };
 
   const resetForm = () => {
     setTitle(data.title);
@@ -237,10 +272,14 @@ const DetailsModal: React.FC<DescModal> = ({ stateSet, data }) => {
   };
 
   const submitUpdate = async () => {
+    if (title.trim() === "" || desc.trim() === "" || tags.length === 0) {
+      displayError("Invalid Values", "A value is required to update a field.");
+      return;
+    }
     const res = await updateCourse({
       code: data.code,
-      title,
-      desc,
+      title: title.trim(),
+      desc: desc.trim(),
       tags,
       tier,
       diff,
@@ -277,9 +316,32 @@ const DetailsModal: React.FC<DescModal> = ({ stateSet, data }) => {
       const val = e.target.value;
       console.log(e.target.value);
       if (val !== "") {
-        setTags([...tags, val]);
+        setTags([val, ...tags]);
         e.target.value = "";
       }
+    }
+  };
+
+  const unenroll = async (code: string, uid: string, name: string) => {
+    const res = await unenrollStudent(uid, code);
+    getTheStud(res.data.students);
+    if (!res.error) {
+      toast(`Unenrollment Success!`, {
+        position: "top-center",
+        duration: 3000,
+        description: `${name} has been removed from the student list.`,
+        icon: (
+          <span className="text-[#ffffff]">
+            <CircleCheckBig />
+          </span>
+        ),
+        classNames: {
+          toast: "bg-emerald-400 border-none",
+          title: "ms-4 text-white text-sm",
+          description: "ms-4 text-white",
+        },
+      });
+      router.refresh();
     }
   };
 
@@ -303,26 +365,26 @@ const DetailsModal: React.FC<DescModal> = ({ stateSet, data }) => {
         {/* Left Side */}
         <div className="w-1/2 h-full p-5 relative flex flex-col justify-between gap-2">
           <div className="flex gap-2 flex-col grow">
-            {/* Tags */}
-            <div className="flex flex-col gap-3">
-              <div className="flex flex-wrap">
-                <AnimatePresence>
-                  {tags.map((tag, idx) => (
-                    <Tags
-                      text={tag}
-                      disable={!editing}
-                      setTag={setTags}
-                      key={`Tagg${tag}`}
-                    />
-                  ))}
-                </AnimatePresence>
-              </div>
-              <AnimatePresence>
+            <div className="flex flex-col gap-4">
+              {/* Tags */}
+              <div className="flex flex-col gap-3">
+                <div className="flex flex-wrap max-h-[72px] overflow-y-scroll customScroll">
+                  <AnimatePresence>
+                    {tags.map((tag, idx) => (
+                      <Tags
+                        text={tag}
+                        disable={!editing}
+                        setTag={setTags}
+                        key={`Tagg${tag}`}
+                      />
+                    ))}
+                  </AnimatePresence>
+                </div>
+
                 {editing && (
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1, transition: { duration: 0.5 } }}
-                    exit={{ opacity: 0 }}
                     className="flex items-center bg-[#a4f3b0] rounded-lg px-3"
                   >
                     <span
@@ -344,42 +406,146 @@ const DetailsModal: React.FC<DescModal> = ({ stateSet, data }) => {
                     </span>
                   </motion.div>
                 )}
-              </AnimatePresence>
-            </div>
-
-            {/* Description */}
-            <div className="flex w-full flex-col">
-              <span className={"text-lg text-[#818181] " + bebas.className}>
-                Description
-              </span>
-              <textarea
-                className={
-                  "outline-0 bg-transparent text-sm w-full resize-none transition-all duration-200 " +
-                  popp.className +
-                  (editing ? " text-[#319e42]" : " text-black")
-                }
-                wrap="soft"
-                value={desc}
-                rows={5}
-                onChange={(e) => setDesc(e.target.value)}
-                disabled={!editing}
-              />
-            </div>
-
-            {/* Students */}
-            <div className="flex w-full grow flex-col">
-              <span className={"text-lg text-[#818181] " + bebas.className}>
-                Students
-              </span>
-              <div className="h-full w-full bg-red-300">
-                <div>John Doe</div>
-                <h1>SSS</h1>
               </div>
+
+              {/* Description */}
+              <div className="flex w-full flex-col">
+                <span className={"text-lg text-[#818181] " + bebas.className}>
+                  Description
+                </span>
+                <textarea
+                  className={
+                    "outline-0 bg-transparent text-sm w-full resize-none transition-all duration-200 customScroll " +
+                    popp.className +
+                    (editing ? " text-[#319e42]" : " text-black")
+                  }
+                  wrap="soft"
+                  value={desc}
+                  rows={5}
+                  onChange={(e) => setDesc(e.target.value)}
+                  disabled={!editing}
+                />
+              </div>
+
+              {/* Students */}
+              {students.length !== 0 ? (
+                <>
+                  {console.log(students)}
+                  <div
+                    className={
+                      "flex flex-col w-full grow pe-3 overflow-y-scroll customScroll " +
+                      (editing ? "h-[140px]" : "h-[180px]")
+                    }
+                  >
+                    <span
+                      className={"text-lg text-[#818181] " + bebas.className}
+                    >
+                      Students
+                    </span>
+                    <div className="w-full flex flex-col gap-2">
+                      {students.map((item: any, idx) => (
+                        <>
+                          <div className="border w-full border-[#cecece] rounded-lg py-2 px-3 flex gap-3 items-center relative">
+                            <span className="text-xs text-[#898989]">
+                              {idx + 1}
+                            </span>
+                            <span className="text-sm grow pe-6 truncate">
+                              {item.name}
+                            </span>
+                            <button
+                              className="text-[#ff6767]"
+                              onClick={() => {
+                                setDelId(item._id);
+                                setDelName(item.name);
+                                setOpenUnenr(true);
+                              }}
+                            >
+                              <UserRoundX size={18} />
+                            </button>
+                          </div>
+                        </>
+                      ))}
+                    </div>
+                    {/* Confirm Unenrollment Dialog */}
+                    {openUnenr && (
+                      <>
+                        <Overlay stateSet={setOpenUnenr} />
+                        <motion.div
+                          initial={{
+                            opacity: 0,
+                            scale: 0,
+                            x: "-50%",
+                            y: "-50%",
+                          }}
+                          animate={{
+                            opacity: 1,
+                            scale: 1,
+                            transition: {
+                              duration: 0.7,
+                              type: "spring",
+                              bounce: 0.4,
+                            },
+                          }}
+                          exit={{ opacity: 0, scale: 0 }}
+                          className="absolute top-1/2 left-1/2 w-4/6 bg-white z-40 rounded-lg py-3 px-4"
+                        >
+                          <div className="w-full h-full flex flex-col gap-2">
+                            <span className="text-sm text-[#787878]">
+                              Continue Action
+                            </span>
+                            <span className="text-base">
+                              Unenroll the student to this course?
+                            </span>
+                            <div className="flex gap-2 justify-end mt-1">
+                              <button
+                                className="text-sm border border-red-500 py-1 px-3 rounded-lg text-red-500"
+                                onClick={() => setOpenUnenr(false)}
+                              >
+                                Cancel
+                              </button>
+
+                              <button
+                                className="text-sm border bg-red-500 py-1 px-3 rounded-lg text-white"
+                                onClick={() => {
+                                  unenroll(data.code, delId, delName);
+                                  setOpenUnenr(false);
+                                }}
+                              >
+                                Confirm
+                              </button>
+                            </div>
+                          </div>
+                        </motion.div>
+                      </>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div
+                    className={
+                      "flex flex-col w-full grow pe-3 " +
+                      (editing ? "h-[140px]" : "h-[180px]")
+                    }
+                  >
+                    <span
+                      className={"text-lg text-[#818181] " + bebas.className}
+                    >
+                      Students
+                    </span>
+                    <div className="w-full bg-[#f1f3f5] h-full rounded-xl flex flex-col items-center gap-3 justify-center">
+                      <span className="text-[#a0a0a0]">
+                        <Ghost size={35} />
+                      </span>
+                      <span className="text-[#818181]">No Students Yet...</span>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
-
           {/* Tier and Difficulty */}
-          <div className="flex justify-evenly w-full gap-3 pb-2">
+          <div className="flex justify-evenly w-full gap-3">
             <OptDrop
               label="Tier"
               text={tier}
@@ -403,10 +569,15 @@ const DetailsModal: React.FC<DescModal> = ({ stateSet, data }) => {
         </div>
 
         {/* Right Side */}
-        <div className="w-1/2 h-full bg-[url('/assets/images/waves.png')] p-3 pt-5 bg-cover rounded-r-xl flex flex-col gap-1 relative">
+        <div className="w-1/2 h-full bg-[url('/assets/images/waves.png')] bg-[#00000030] bg-blend-overlay bg- p-3 pt-5 bg-cover rounded-r-xl flex flex-col gap-1 relative">
           {/* Title & Code + Edit Btn */}
           <div className="relative">
-            <span className={"text-white " + popp.className}>{data.code}</span>
+            <span className={"text-white " + popp.className}>
+              {data.code + " "}
+              <span className="text-sm text-[#c9c9c9]">
+                • by {data.publisherName}
+              </span>
+            </span>
             <textarea
               className={
                 "outline-0 bg-transparent w-full text-2xl resize-none pe-24 transition-all duration-200 " +
@@ -448,37 +619,94 @@ const DetailsModal: React.FC<DescModal> = ({ stateSet, data }) => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1, transition: { duration: 0.5 } }}
                 className="absolute top-0 right-3 text-white p-2.5 border disabled:pointer-events-none disabled:text-[#ffffff50] disabled:border-[#ffffff50] border-white rounded-full hover:bg-[#5dd788] hover:text-black hover:border-transparent transition-all duration-200"
-                onClick={() => setEditing(true)}
-                disabled={data.published}
+                onClick={
+                  data.published
+                    ? () => {
+                        displayError(
+                          "Error Updating Course",
+                          "Unpublish the course before updating."
+                        );
+                      }
+                    : creator
+                    ? () => setEditing(true)
+                    : () => {
+                        displayError(
+                          "Access Denied.",
+                          "You have no permission to edit this course."
+                        );
+                      }
+                }
               >
                 <Pencil size={20} />
               </motion.button>
             )}
           </div>
+          {/* Modules */}
+          <div className="w-full flex flex-col grow gap-3 ">
+            <div className="flex gap-3">
+              <button
+                className={`${
+                  bebas.className
+                } text-black text-lg bg-white py-0.5 px-3 rounded-xl  ${
+                  moduleTab ? "" : "opacity-40"
+                }`}
+                onClick={() => setModuleTab(true)}
+              >
+                <span className="translate-y-[1px] block">Modules</span>
+              </button>
+              <button
+                className={`${
+                  bebas.className
+                } text-black text-lg bg-white py-0.5 px-3 rounded-xl ${
+                  moduleTab ? "opacity-40" : ""
+                }`}
+                onClick={() => setModuleTab(false)}
+              >
+                <span className="translate-y-[1px] block">Quizzes</span>
+              </button>
+            </div>
+            <div className="overflow-y-scroll customScroll grow pe-4">
+              <div className="w-full h-full bg-[#00000020] flex items-center rounded-xl justify-center">
+                {moduleTab ? <>Modules Dito</> : <>Quizzes Dito</>}
+              </div>
+            </div>
+          </div>
           {/* Delete */}
-          <button
-            className="absolute bottom-5 left-6"
-            onClick={() => setDelModal(true)}
-          >
-            <span className="text-[#ff7070]">
-              <Trash />
-            </span>
-          </button>
-          {/* Publish */}
-          <button
-            className="absolute bottom-5 right-6 bg-white rounded-full px-4 py-1 text-sm"
-            onClick={
-              data.published
-                ? () => {
-                    publishSubmit(false);
-                  }
-                : () => {
-                    publishSubmit(true);
-                  }
-            }
-          >
-            {data.published ? "Unpublish" : "Publish"}
-          </button>
+          <div className="flex justify-between px-2 mt-3">
+            <button
+              className=""
+              onClick={
+                creator
+                  ? () => setDelModal(true)
+                  : () => {
+                      displayError(
+                        "Access Denied.",
+                        "You have no permission to delete this course."
+                      );
+                    }
+              }
+            >
+              <span className="text-[#ff7070]">
+                <Trash />
+              </span>
+            </button>
+            {/* Publish */}
+            <button
+              className=" hover:bg-[#419b4f] hover:text-white rounded-full px-4 py-1 text-sm border hover:border-transparent border-[#58c568] text-[#58c568] bg-[#00000018] transition-all duration-200"
+              onClick={
+                data.published
+                  ? () => {
+                      publishSubmit(false);
+                    }
+                  : () => {
+                      publishSubmit(true);
+                    }
+              }
+            >
+              {data.published ? "Unpublish" : "Publish"}
+            </button>
+          </div>
+
           {/* Delete Confirm */}
           <AnimatePresence>
             {delModal && (
@@ -554,7 +782,7 @@ const OptDrop: React.FC<DropProp> = ({
 }) => {
   const [open, setOpen] = useState(false);
   return (
-    <div className="flex flex-col gap-1 w-1/2 items-center pb-2">
+    <div className="flex flex-col gap-0 w-1/2 items-center pb-2">
       <span className={"text-lg text-[#818181] " + bebas.className}>
         {label}
       </span>

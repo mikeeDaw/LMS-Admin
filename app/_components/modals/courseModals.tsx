@@ -101,12 +101,12 @@ export const ModalAdd: React.FC<AddModal> = ({
       });
     } else {
       const res = await addCourse({
-        title,
-        code,
-        desc,
+        title: title.trim(),
+        code: code.toUpperCase().trim(),
+        desc: desc.trim(),
         tags: theTags,
-        tier: tierVal,
-        diff: diffVal,
+        tier: tierVal.trim(),
+        diff: diffVal.trim(),
         publisherEmail,
         publisherName,
         students: [],
@@ -139,6 +139,20 @@ export const ModalAdd: React.FC<AddModal> = ({
         setTimeout(() => {
           router.refresh();
         }, 1000);
+      } else {
+        toast("Creation Failed.", {
+          description: res.msg,
+          icon: (
+            <span className="text-white">
+              <CircleX />
+            </span>
+          ),
+          classNames: {
+            toast: "bg-red-400 border-none",
+            title: "ms-3 text-white",
+            description: "ms-3 text-white",
+          },
+        });
       }
       console.log(res);
     }
@@ -280,10 +294,13 @@ export const ModalAdd: React.FC<AddModal> = ({
         </div>
         {/* Description and DropDowns */}
         <div className="w-full flex gap-10 justify-between z-10">
-          <div className="relative">
+          <div className="relative flex flex-col border border-[#606060] rounded-xl py-2">
+            <div className={"text-[#aaaaaa] ps-3 " + bebas.className}>
+              Description
+            </div>
             <textarea
               name="description"
-              className="bg-transparent border border-[#606060] outline-none text-sm rounded-xl resize-none text-[#eeeeee] p-3 pt-7 placeholder:text-[#606060] placeholder:text-sm"
+              className="bg-transparent outline-none text-sm resize-none text-[#eeeeee] p-3 pt-0 placeholder:text-[#606060] placeholder:text-sm customScroll"
               id=""
               cols={45}
               rows={3}
@@ -291,13 +308,6 @@ export const ModalAdd: React.FC<AddModal> = ({
               value={desc}
               onChange={(e) => setDesc(e.target.value)}
             ></textarea>
-            <div
-              className={
-                "absolute top-2 text-[#aaaaaa] left-3 " + bebas.className
-              }
-            >
-              Description
-            </div>
           </div>
           {/* DropDowns */}
           <div className="flex flex-col w-[40%] gap-2 h-full">

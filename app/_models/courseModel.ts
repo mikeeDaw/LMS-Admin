@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 const courseSchema = new Schema(
   {
-    title: { type: String, require: true },
+    title: { type: String, require: true, unique: true },
     code: { type: String, require: true, unique: true },
     desc: { type: String, require: true },
     tags: { type: [String], require: true },
@@ -40,3 +40,10 @@ export const publishCourseByCode = (code: string, toStat: boolean) =>
 
 export const deleteCourseByCode = (code: string) =>
   courseModel.findOneAndDelete({ code: code });
+
+export const removeStudent = (uid: string, code: string) =>
+  courseModel.findOneAndUpdate(
+    { code },
+    { $pullAll: { students: [uid] } },
+    { new: true }
+  );

@@ -15,6 +15,7 @@ const popp = Poppins({ weight: "400", subsets: ["latin"] });
 
 const CoursePage = async () => {
   const sesh = await auth();
+  console.log(sesh);
   await connectToDb();
   const courses = await getAllCourses();
   let delay = 0;
@@ -48,6 +49,7 @@ const CoursePage = async () => {
                       delayTime={delay}
                       data={JSON.parse(JSON.stringify(item))}
                       key={item.code}
+                      email={sesh?.user.email!}
                     />
                   );
                 }
@@ -75,6 +77,7 @@ const CoursePage = async () => {
                     delayTime={delay}
                     data={JSON.parse(JSON.stringify(item))}
                     key={item.code}
+                    email={sesh?.user.email!}
                   />
                 );
               }
