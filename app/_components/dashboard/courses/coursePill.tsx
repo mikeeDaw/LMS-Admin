@@ -424,6 +424,7 @@ const DetailsModal: React.FC<DescModal> = ({ stateSet, data, email }) => {
                   rows={5}
                   onChange={(e) => setDesc(e.target.value)}
                   disabled={!editing}
+                  data-testid="course-details"
                 />
               </div>
 
@@ -454,11 +455,28 @@ const DetailsModal: React.FC<DescModal> = ({ stateSet, data, email }) => {
                             </span>
                             <button
                               className="text-[#ff6767]"
-                              onClick={() => {
-                                setDelId(item._id);
-                                setDelName(item.name);
-                                setOpenUnenr(true);
-                              }}
+                              onClick={
+                                data.published
+                                  ? () => {
+                                      displayError(
+                                        "Error Unenrolling Student.",
+                                        "Unpublish the course before updating."
+                                      );
+                                    }
+                                  : creator
+                                  ? () => {
+                                      setDelId(item._id);
+                                      setDelName(item.name);
+                                      setOpenUnenr(true);
+                                    }
+                                  : () => {
+                                      displayError(
+                                        "Error Unenrolling Student.",
+                                        "You have no editing access to this course."
+                                      );
+                                    }
+                              }
+                              data-testid={`unenroll-student-${item._id}`}
                             >
                               <UserRoundX size={18} />
                             </button>
@@ -590,6 +608,7 @@ const DetailsModal: React.FC<DescModal> = ({ stateSet, data, email }) => {
                 setTitle(e.target.value);
               }}
               disabled={!editing}
+              data-testid="course-name"
             />
 
             {editing ? (
@@ -636,6 +655,7 @@ const DetailsModal: React.FC<DescModal> = ({ stateSet, data, email }) => {
                         );
                       }
                 }
+                data-testid={`edit-course`}
               >
                 <Pencil size={20} />
               </motion.button>
@@ -676,7 +696,14 @@ const DetailsModal: React.FC<DescModal> = ({ stateSet, data, email }) => {
             <button
               className=""
               onClick={
-                creator
+                data.published
+                  ? () => {
+                      displayError(
+                        "Error Deleting Course",
+                        "Unpublish the course before deletion."
+                      );
+                    }
+                  : creator
                   ? () => setDelModal(true)
                   : () => {
                       displayError(
@@ -685,6 +712,7 @@ const DetailsModal: React.FC<DescModal> = ({ stateSet, data, email }) => {
                       );
                     }
               }
+              data-testid="delete-course"
             >
               <span className="text-[#ff7070]">
                 <Trash />
@@ -694,13 +722,23 @@ const DetailsModal: React.FC<DescModal> = ({ stateSet, data, email }) => {
             <button
               className=" hover:bg-[#419b4f] hover:text-white rounded-full px-4 py-1 text-sm border hover:border-transparent border-[#58c568] text-[#58c568] bg-[#00000018] transition-all duration-200"
               onClick={
-                data.published
-                  ? () => {
-                      publishSubmit(false);
-                    }
+                creator
+                  ? data.published
+                    ? () => {
+                        publishSubmit(false);
+                      }
+                    : () => {
+                        publishSubmit(true);
+                      }
                   : () => {
-                      publishSubmit(true);
+                      displayError(
+                        "Error Publishing Course",
+                        "You do not have access on updating this course."
+                      );
                     }
+              }
+              data-testid={
+                data.published ? "unpublish-course" : "publish-course"
               }
             >
               {data.published ? "Unpublish" : "Publish"}
@@ -729,12 +767,14 @@ const DetailsModal: React.FC<DescModal> = ({ stateSet, data, email }) => {
                   <button
                     className="rounded-xl bg-[#acacac] px-4 text-white py-1"
                     onClick={() => setDelModal(false)}
+                    data-testid="cancel"
                   >
                     Cancel
                   </button>
                   <button
                     className="rounded-xl bg-red-500 px-4 text-white py-1"
                     onClick={() => deleteTheCourse(data.code)}
+                    data-testid="proceed"
                   >
                     Delete
                   </button>

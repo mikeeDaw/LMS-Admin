@@ -21,17 +21,19 @@ const CoursePage = async () => {
   let delay = 0;
   return (
     <div
-      className={"h-screen flex flex-col bg-[#5a5a5a] grow " + popp.className}
+      className={
+        "min-h-screen flex flex-col bg-[#5a5a5a] grow " + popp.className
+      }
     >
       <Toaster position="top-center" className="absolute" />
       {/* Header */}
-      <div className="w-full h-[69px] bg-black py-4 flex px-5 items-center">
+      <div className="w-full h-[60px] bg-black py-4 flex px-5 items-center">
         <span className={"text-2xl text-white " + bebas.className}>
           Courses
         </span>
       </div>
       {/* Content Area */}
-      <div className="px-6 pt-6 flex flex-col gap-5">
+      <div className="px-6 pt-5 flex flex-col gap-5 grow">
         {/* Heading Title */}
         <CourseHeader />
 

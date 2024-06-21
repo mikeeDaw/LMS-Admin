@@ -35,7 +35,7 @@ const NavigationBar: React.FC<Props> = ({ name }) => {
       {/* Nav Heading */}
       <div
         className={
-          "border-b border-[#888888] items-center w-full flex px-5 py-4 " +
+          "border-b border-[#888888] items-center w-full flex px-5 py-3 " +
           (expand ? "justify-between" : "justify-center")
         }
       >

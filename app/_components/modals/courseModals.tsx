@@ -64,14 +64,14 @@ export const ModalAdd: React.FC<AddModal> = ({
 
   const pressEntr = (e: any) => {
     if (e.key == "Enter") {
-      if (tag !== "") {
+      if (tag.trim() !== "") {
         setTheTags([tag, ...theTags]);
         setTag("");
       }
     }
   };
   const clickArr = () => {
-    if (tag !== "") {
+    if (tag.trim() !== "") {
       setTheTags([...theTags, tag]);
       setTag("");
     }
@@ -84,7 +84,7 @@ export const ModalAdd: React.FC<AddModal> = ({
   }, [clickTier]);
 
   const handleSubmit = async () => {
-    if (!title || !code || !desc || theTags.length == 0) {
+    if (!title.trim() || !code.trim() || !desc.trim() || theTags.length == 0) {
       console.log("ERROR");
       toast.error("Please Fill Out the Fields.", {
         position: "top-center",
@@ -202,6 +202,7 @@ export const ModalAdd: React.FC<AddModal> = ({
                 autoComplete="off"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
+                data-testid="course-title"
               />
               <label
                 htmlFor="cTitle"
@@ -222,6 +223,7 @@ export const ModalAdd: React.FC<AddModal> = ({
                 placeholder="CS00231"
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
+                data-testid="course-code"
               />
               <label
                 htmlFor="cCode"
@@ -236,6 +238,7 @@ export const ModalAdd: React.FC<AddModal> = ({
           <button
             className="z-10 bg-[#4eac53] text-white rounded-2xl px-4 text-sm hover:bg-[#232323] transition-all duration-200"
             onClick={handleSubmit}
+            data-testid="create-course"
           >
             Save
           </button>
@@ -307,6 +310,7 @@ export const ModalAdd: React.FC<AddModal> = ({
               placeholder="type here..."
               value={desc}
               onChange={(e) => setDesc(e.target.value)}
+              data-testid="course-details"
             ></textarea>
           </div>
           {/* DropDowns */}
@@ -440,6 +444,7 @@ export const AddCourse: React.FC<addProps> = ({
           }}
           className="bg-[#DDDDDD30] rounded-lg flex flex-col w-56 h-48 overflow-hidden shrink-0 border-4 border-dashed justify-center items-center"
           onClick={() => setOpenModal(true)}
+          data-testid="add-course"
         >
           <div className="flex flex-col gap-3 w-1/2 ">
             <span className="text-[#696969] self-center p-2 block bg-white rounded-full">

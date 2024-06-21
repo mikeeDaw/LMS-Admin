@@ -20,7 +20,7 @@ const CourseHeader = () => {
           bounce: 0.4,
         },
       }}
-      className="bg-black rounded-xl px-10 py-6 flex flex-col gap-1 relative"
+      className="bg-black rounded-xl px-10 py-5 flex flex-col gap-1 relative"
     >
       <div className="absolute inset-0 z-0 opacity-50 rounded-xl">
         <Pattern />
