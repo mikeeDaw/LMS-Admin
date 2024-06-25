@@ -864,13 +864,14 @@ const OptDrop: React.FC<DropProp> = ({
               className="absolute left-[110%] bg-[#2c2c2c] py-2 flex flex-col items-start rounded-lg z-50"
               key={`${text}+${Math.random() * 999}`}
             >
-              {options.map((opt) => (
+              {options.map((opt, idx) => (
                 <button
                   className="ps-4 pe-8 py-0.5 text-sm w-full text-start text-white border-l-2 border-transparent transition-all hover:border-[#82e991] hover:bg-[#285c30]"
                   onClick={() => {
                     setText(opt);
                     setOpen(false);
                   }}
+                  key={`btnn${idx}`}
                 >
                   {opt}
                 </button>

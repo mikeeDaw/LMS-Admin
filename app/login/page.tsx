@@ -59,8 +59,8 @@ const AdminLog = async () => {
             <span
               className={"text-sm text-center text-[#a0a0a0] " + popp.className}
             >
-              Welcome to our learning community! Whether you're here to learn or
-              explore, you're in the right place.
+              Welcome to our learning community! Whether you&apos;re here to
+              learn or explore, you&apos;re in the right place.
             </span>
 
             {/* Login Options */}
