@@ -3,7 +3,6 @@ import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import { LogSchema } from "./app/_schema";
 import { connectToDb } from "./app/lib/mongoose";
-import { findAdminbyEmail } from "./app/_models/adminModel";
 import bcrypt from "bcryptjs";
 
 export default {
@@ -17,11 +16,20 @@ export default {
         const validated = LogSchema.safeParse(credentials);
 
         if (validated.success) {
-          await connectToDb();
           const { email, password } = validated.data;
 
-          const admin = await findAdminbyEmail(email);
+          const resp = await fetch(
+            `http://localhost:3000/api/mongops/findUser`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ email: email }),
+            }
+          );
 
+          const admin = await resp.json();
           if (!admin || !admin.password) return null;
 
           const passMatch = await bcrypt.compare(password, admin.password);
