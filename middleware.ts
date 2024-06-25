@@ -5,6 +5,7 @@ import {
   publicRoutes,
   authRoutes,
   apiAuthPrefix,
+  apiDB,
 } from "@/routes";
 
 const { auth } = NextAuth(authConfig);
@@ -15,8 +16,9 @@ export default auth((req) => {
   const isAuthPrefix = nextUrl.pathname.startsWith(apiAuthPrefix);
   const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
+  const isAPI = nextUrl.pathname.startsWith(apiDB);
   console.log(nextUrl.pathname);
-  if (isAuthPrefix || nextUrl.pathname.includes("/api/register")) {
+  if (isAuthPrefix || nextUrl.pathname.includes("/api/register") || isAPI) {
     return;
   }
   if (isAuthRoute) {

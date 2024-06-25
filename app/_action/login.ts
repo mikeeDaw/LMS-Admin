@@ -34,7 +34,6 @@ export const login = async (values: any) => {
     }
     throw error;
   }
-
   // Login Successful. No Errors
   return { error: false, msg: "Login Successful" };
 };
