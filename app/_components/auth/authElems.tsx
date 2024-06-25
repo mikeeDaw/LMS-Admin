@@ -24,12 +24,12 @@ const GoogleLogInBtn = () => {
   // For Google Deny
   const param = useSearchParams();
   const deny = param.get("error");
-
+  console.log(deny);
   const denyFunc = () => {
-    if (deny && deny == "AccessDenied") {
+    if (deny) {
       setTimeout(() => {
         toast.error("ERROR!", {
-          description: "Access Denied.",
+          description: deny.replace("-", " ") + ".",
           duration: 3000,
           icon: (
             <span className="text-red-500 ps-2">
@@ -53,11 +53,12 @@ const GoogleLogInBtn = () => {
     <button
       className="flex border border-[#DDDDDD] bg-[#0a0a0a] w-full justify-center items-center gap-6 py-3 rounded-lg"
       onClick={handleClick}
+      data-testid="google-login-button"
     >
       <span className="w-5">
         <img src="/assets/images/google.svg" alt="Google Logo" />
       </span>
-      <span className={"text-[#BBBBBB] " + poppSemi.className}>
+      <span className={"text-[#BBBBBB] text-xs " + poppSemi.className}>
         Continue with Google
       </span>
     </button>
@@ -82,6 +83,74 @@ const CredentialLogIn = () => {
       password: "",
     },
   });
+
+  // No input error msg
+  useEffect(() => {
+    if (
+      errors.email &&
+      errors.password &&
+      errors.email.message &&
+      errors.password.message
+    ) {
+      if (
+        errors.email.message.search("Required") > -1 &&
+        errors.password.message.search("Required") > -1
+      ) {
+        toast.error("ERROR!", {
+          description: "Please Fill Out the Fields.",
+          duration: 4500,
+          icon: (
+            <span className="text-red-500 ps-2">
+              <CircleX />
+            </span>
+          ),
+          classNames: {
+            toast: "bg-[#121212] border-none",
+            title: "ms-4 text-red-500",
+            description: "ms-4 text-[#CCCCCC]",
+            icon: "bg-black",
+          },
+        });
+      }
+    } else if (errors.email && errors.email.message) {
+      if (errors.email.message.search("Required") > -1) {
+        toast.error("ERROR!", {
+          description: errors.email.message,
+          duration: 4500,
+          icon: (
+            <span className="text-red-500 ps-2">
+              <CircleX />
+            </span>
+          ),
+          classNames: {
+            toast: "bg-[#121212] border-none",
+            title: "ms-4 text-red-500",
+            description: "ms-4 text-[#CCCCCC]",
+            icon: "bg-black",
+          },
+        });
+      }
+      if (errors.password && errors.password.message) {
+        if (errors.password.message.search("Required") > -1) {
+          toast.error("ERROR!", {
+            description: errors.password.message,
+            duration: 4500,
+            icon: (
+              <span className="text-red-500 ps-2">
+                <CircleX />
+              </span>
+            ),
+            classNames: {
+              toast: "bg-[#121212] border-none",
+              title: "ms-4 text-red-500",
+              description: "ms-4 text-[#CCCCCC]",
+              icon: "bg-black",
+            },
+          });
+        }
+      }
+    }
+  }, [errors.email, errors.password]);
 
   const handleClick = (values: z.infer<typeof LogSchema>) => {
     startTransition(async () => {
@@ -133,12 +202,13 @@ const CredentialLogIn = () => {
         <div className="w-full relative">
           <input
             className={
-              "border text-[#DDDDDD] bg-[#0a0a0a] py-3 w-full text-sm outline-none pe-3 rounded-lg ps-14 " +
+              "border text-[#DDDDDD] bg-[#0a0a0a] py-3 w-full text-xs outline-none pe-3 rounded-lg ps-14 " +
               (logErr || errors.email != undefined
                 ? "border-[#f25d5d] "
                 : "border-[#BBBBBB] focus:border-[#76d867] focus:text-[#76d867] ") +
               popp.className
             }
+            data-testid="email-login-field"
             onFocus={() => {
               setEmailFocus(true);
             }}
@@ -163,12 +233,13 @@ const CredentialLogIn = () => {
         <div className="w-full relative">
           <input
             className={
-              "border text-[#DDDDDD] bg-[#0a0a0a] py-3 w-full text-sm outline-none pe-3 rounded-lg ps-14 " +
+              "border text-[#DDDDDD] bg-[#0a0a0a] py-3 w-full text-xs outline-none pe-3 rounded-lg ps-14 " +
               (logErr || errors.password != undefined
                 ? "border-[#f25d5d] "
                 : "border-[#BBBBBB] focus:border-[#76d867] focus:text-[#76d867] ") +
               popp.className
             }
+            data-testid="password-login-field"
             onFocus={() => {
               setPassFocus(true);
             }}
@@ -191,9 +262,10 @@ const CredentialLogIn = () => {
         {/* Submit */}
         <button
           className={
-            "bg-[#76d867] w-full py-3 rounded-lg text-[#333333] " +
+            "bg-[#76d867] w-full text-sm py-3 rounded-lg text-[#333333] " +
             poppSemi.className
           }
+          data-testid="login-button"
           disabled={isPending}
           type="submit"
         >

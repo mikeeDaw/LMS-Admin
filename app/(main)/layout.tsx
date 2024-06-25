@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "@/app/globals.css";
 import NavigationBar from "../_components/navbar/navBar";
 import { auth } from "@/auth";
+import { Suspense } from "react";
+import LoadingView from "../_components/etc/loading";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,7 +26,7 @@ export default async function RootLayout({
     <html lang="en">
       <body className={inter.className + " flex"}>
         <NavigationBar name={`${name[0]} ${name.pop()![0]}.`} />
-        {children}
+        <Suspense fallback={<LoadingView />}>{children}</Suspense>
       </body>
     </html>
   );

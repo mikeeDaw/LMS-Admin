@@ -19,7 +19,7 @@ export default async function Home() {
     <>
       <div className="w-full h-screen bg-[#696969] flex flex-col gap-1">
         {/* Header */}
-        <div className="w-full h-[69px] bg-black py-4 flex px-5 items-center">
+        <div className="w-full h-[60px] bg-black py-4 flex px-5 items-center">
           <span className={"text-2xl text-white " + bebas.className}>
             Dashboard
           </span>

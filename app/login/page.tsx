@@ -26,7 +26,7 @@ const AdminLog = async () => {
           {/* Logo */}
           <span
             className={
-              "text-4xl text-[#DDDDDD] pt-8 px-4 absolute top-0 left-5 " +
+              "text-2xl text-[#DDDDDD] pt-8 px-4 absolute top-0 left-5 " +
               bebas.className
             }
           >
@@ -38,7 +38,7 @@ const AdminLog = async () => {
           {/* Back Button */}
           <span
             className={
-              "text-2xl text-[#BBBBBB] pt-8 px-4 absolute top-0 right-3 flex items-center gap-3 cursor-pointer"
+              "text-xl text-[#BBBBBB] pt-8 px-4 absolute top-0 right-3 flex items-center gap-3 cursor-pointer"
             }
           >
             <span className="w-5 translate-y-[-2px]">
@@ -47,23 +47,24 @@ const AdminLog = async () => {
             <span className={"" + bebas.className}> Back </span>
           </span>
           {/* Content Area */}
-          <div className="flex flex-col w-5/6 items-center gap-4 mt-14 px-8 xl:px-6">
+          <div className="flex flex-col w-5/6 items-center gap-4 mt-14 px-3 xl:px-6">
             {/* Text Intro */}
-            <span className={"text-5xl text-[#76d867] " + bebas.className}>
+            <span
+              className={
+                "text-4xl text-center text-[#76d867] " + bebas.className
+              }
+            >
               Welcome Back Admin!
             </span>
             <span
-              className={
-                "text-base text-center text-[#a0a0a0] " + popp.className
-              }
+              className={"text-sm text-center text-[#a0a0a0] " + popp.className}
             >
               Welcome to our learning community! Whether you're here to learn or
-              explore, you're in the right place. Dive into your courses and
-              latest resources!
+              explore, you're in the right place.
             </span>
 
             {/* Login Options */}
-            <div className="flex flex-col w-full mt-6 gap-7">
+            <div className="flex flex-col w-full mt-3 gap-5">
               <GoogleLogInBtn />
               {/* "OR" partition */}
               <div className="flex w-full gap-3 items-center">

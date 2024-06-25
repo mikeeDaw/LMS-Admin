@@ -22,13 +22,14 @@ export const login = async (values: any) => {
       redirectTo: "/",
     });
   } catch (error) {
-    console.log(error);
     if (error instanceof AuthError) {
       switch (error.type) {
         case "CredentialsSignin":
           return { error: true, msg: "Invalid Credentials" };
-        default:
+        case "AccessDenied":
           return { error: true, msg: "Access Denied." };
+        default:
+          return { error: true, msg: "Not Allowed." };
       }
     }
     throw error;

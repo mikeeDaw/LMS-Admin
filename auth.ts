@@ -13,19 +13,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async signIn({ user }) {
       await connectToDb();
       const theUser = await adminModel.findOne({ email: user.email });
-      console.log("In SignIn:", theUser);
-      console.log("LOGIN", theUser);
       if (theUser) {
         if (theUser.userRole == undefined) {
-          await adminModel.findByIdAndUpdate(
-            { _id: user.id },
-            {
-              $set: { userRole: "ADMIN" },
-            },
-            { strict: false }
-          );
-
-          return true;
+          return "/login?error=Access-Denied";
         } else {
           if (theUser.userRole == "USER") {
             return false;
@@ -34,20 +24,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           }
         }
       } else {
-        return true;
+        return "/login?error=No-Account";
       }
     },
     async session({ token, session, user }) {
-      // console.log({
-      //   sessionToken: token,
-      //   session,
-      // });
-      // console.log("USER", user);
-
-      // if (token.sub && session.user) {
-      //   session.user.id = token.sub;
-      //   session.user.name = token.userData.fName
-      // }
       if (token && token.user) {
         session.user.name = token.user.name;
       }
@@ -55,10 +35,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session;
     },
     async jwt({ token, user }) {
-      // console.log("token:", token);
-      console.log("JWT", user, token);
-
-      // console.log("User:", user);
       return token;
     },
   },
