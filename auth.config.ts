@@ -19,7 +19,7 @@ export default {
           const { email, password } = validated.data;
 
           const resp = await fetch(
-            `http://localhost:3000/api/mongops/findUser`,
+            `https://learnflix-admin.vercel.app/api/mongops/findUser`,
             {
               method: "POST",
               headers: {
