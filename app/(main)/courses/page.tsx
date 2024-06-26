@@ -25,7 +25,11 @@ const CoursePage = async () => {
         "min-h-screen flex flex-col bg-[#5a5a5a] grow " + popp.className
       }
     >
-      <Toaster position="top-center" className="absolute" />
+      <Toaster
+        position="top-center"
+        className="absolute"
+        data-testid="toastMessage"
+      />
       {/* Header */}
       <div className="w-full h-[60px] bg-black py-4 flex px-5 items-center">
         <span className={"text-2xl text-white " + bebas.className}>

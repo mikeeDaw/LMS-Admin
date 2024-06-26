@@ -108,6 +108,7 @@ const CoursePill: React.FC<PillProps> = ({ delayTime, data, email }) => {
           setShowDet(!showDet);
         }}
         className="bg-[url('/assets/images/waves.png')] bg-cover shadow-[inset_0px_-82px_61px_-49px_#000000a6] rounded-lg flex flex-col w-56 h-48 overflow-hidden shrink-0 p-2 relative"
+        data-testid={`${data.code}`}
       >
         {/* Tier Badge */}
         <span className="bg-yellow-300 absolute rounded-full p-1 text-[#333] right-3 top-3">
