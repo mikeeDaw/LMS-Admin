@@ -552,7 +552,7 @@ const DetailsModal: React.FC<DescModal> = ({ stateSet, data, email }) => {
                     >
                       Students
                     </span>
-                    <div className="w-full bg-[#f1f3f5] h-full rounded-xl flex flex-col items-center gap-3 justify-center">
+                    <div className="w-full h-full rounded-xl flex flex-col items-center gap-3 justify-center">
                       <span className="text-[#a0a0a0]">
                         <Ghost size={35} />
                       </span>

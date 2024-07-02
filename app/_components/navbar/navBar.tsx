@@ -28,7 +28,7 @@ const NavigationBar: React.FC<Props> = ({ name }) => {
     <motion.div
       className={
         "bg-black flex flex-col h-screen text-[#BBBBBB] transition-all border-r border-[#888888] " +
-        (expand ? "w-[210px] " : "w-[90px] ") +
+        (expand ? "min-w-[210px] " : "min-w-[90px] ") +
         popp.className
       }
     >
@@ -153,8 +153,8 @@ const NavigationBar: React.FC<Props> = ({ name }) => {
             <NavItem
               expand={expand}
               icon={<Gem size={expand ? 21 : 24} />}
-              textStr="Kahit Ano"
-              redirect="#"
+              textStr="Pricing"
+              redirect="/pricing"
             />
           </div>
         </div>
