@@ -1,8 +1,8 @@
-export const publicRoutes = ["/login"];
+export const publicRoutes = ["/login", "/api/uploadthing"];
 
 export const authRoutes = ["/login"];
 
-export const apiAuthPrefix = "/api/auth";
+export const apiAuthPrefix = "/api";
 
 export const apiDB = "/api/mongops";
 /**

@@ -4,10 +4,17 @@ import {
   Bird,
   Check,
   ChevronDown,
+  ChevronRight,
   CircleCheckBig,
   CircleChevronRight,
+  CirclePlus,
   CircleX,
+  Clapperboard,
+  Cloud,
+  Film,
   Ghost,
+  MonitorPlay,
+  Paperclip,
   Pencil,
   Puzzle,
   Sparkles,
@@ -31,9 +38,11 @@ import {
 } from "@/app/_action/courses";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { UploadButton } from "../../uploadthing/uploadthing";
 
 const bebas = Bebas_Neue({ weight: "400", subsets: ["latin"] });
 const popp = Poppins({ weight: "400", subsets: ["latin"] });
+const poppSemi = Poppins({ weight: "600", subsets: ["latin"] });
 
 interface CourseProp {
   data: Course;
@@ -166,6 +175,8 @@ const EmptySection = () => {
 
 const DetailsModal: React.FC<DescModal> = ({ stateSet, data, email }) => {
   const router = useRouter();
+
+  // Andaming UseState alam ko.
   const [title, setTitle] = useState(data.title);
   const [desc, setDesc] = useState(data.desc);
   const [tags, setTags] = useState(data.tags);
@@ -176,8 +187,13 @@ const DetailsModal: React.FC<DescModal> = ({ stateSet, data, email }) => {
   const [students, setStudents] = useState([]);
   const [moduleTab, setModuleTab] = useState(true);
   const [openUnenr, setOpenUnenr] = useState(false);
+  const [openAddMod, setOpenAddMod] = useState(false);
   const [delId, setDelId] = useState("");
   const [delName, setDelName] = useState("");
+  const [upVideo, setUpVideo] = useState<any>();
+  const [videoURL, setVideoURL] = useState("");
+  const [lessonTit, setLessonTit] = useState("");
+  const [lessonDesc, setLessonDesc] = useState("");
   const creator = data.publisherEmail === email;
 
   const getTheStud = async (studentIds: string[]) => {
@@ -346,8 +362,151 @@ const DetailsModal: React.FC<DescModal> = ({ stateSet, data, email }) => {
     }
   };
 
+  const handleVideoChange = (e: any) => {
+    console.log(e.target.files);
+    if (e.target.files) {
+      const media = URL.createObjectURL(e.target.files[0]);
+      setVideoURL(media);
+      setUpVideo(e.target.files[0]);
+    }
+  };
+
+  const handleCreateModule = async () => {
+    const files = upVideo;
+  };
+
   return (
     <>
+      <AnimatePresence>
+        {/* Add Module */}
+        {openAddMod && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0, x: "-50%", y: "-50%" }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+              transition: {
+                duration: 0.7,
+                type: "spring",
+                bounce: 0.4,
+              },
+            }}
+            exit={{ opacity: 0, scale: 0 }}
+            className={`z-40 bg-white absolute w-1/2 xl:w-[40%] left-1/2 top-1/2 translate-x-[-50%] py-4 px-5 rounded-lg`}
+          >
+            <div className="w-full h-full flex gap-3">
+              {/* Left Side */}
+              <div className="w-1/2 h-fit flex flex-col">
+                <span className={`mb-4 ${poppSemi.className}`}>
+                  Add A Module
+                </span>
+                {/* <input
+                  type="file"
+                  name="videoModule"
+                  id="videoModule"
+                  accept="video/*"
+                  className="w-[0.1px] h-[0.1px] opacity-0 absolute "
+                  onChange={handleVideoChange}
+                /> */}
+                <UploadButton
+                  endpoint="imageUploader"
+                  onClientUploadComplete={(res) => {
+                    // Do something with the response
+                    console.log("Files: ", res);
+                    alert("Upload Completed");
+                  }}
+                  onUploadError={(error: Error) => {
+                    // Do something with the error.
+                    alert(`ERROR! ${error.message}`);
+                  }}
+                />
+                <label htmlFor="videoModule">
+                  <div className="h-48 border-[3px] border-dashed border-[#4e90ce] p-1 rounded-lg cursor-pointer">
+                    <div className=" bg-[#e9f5ff] h-full rounded-md flex flex-col items-center justify-center gap-4">
+                      {videoURL ? (
+                        <video
+                          src={videoURL}
+                          width="200"
+                          height="100"
+                          className="rounded-xl"
+                          controls
+                        ></video>
+                      ) : (
+                        <span className="text-[#aaa]">
+                          <Clapperboard size={45} />
+                        </span>
+                      )}
+                      <button className="bg-[#4e90ce] text-white text-xs ps-2 pe-3 py-1 rounded-lg flex items-center gap-1">
+                        <Paperclip size={15} /> <span>Upload a Video</span>
+                      </button>
+                    </div>
+                  </div>
+                </label>
+              </div>
+              {/* Right Side */}
+              <div className="w-1/2 h-auto flex flex-col">
+                <div className="self-end flex mb-4 gap-3">
+                  <button
+                    className="border border-red-500 flex gap-1 items-center ps-3 pe-2 py-1 rounded-xl"
+                    onClick={() => setOpenAddMod(false)}
+                  >
+                    <span className="text-sm text-red-500">Close</span>
+                    <span className="text-red-500">
+                      <X size={20} />
+                    </span>
+                  </button>
+                  <button
+                    className="flex items-center gap-1 bg-green-500 ps-3 pe-2 py-1 rounded-xl"
+                    onClick={handleCreateModule}
+                  >
+                    <span className="text-sm text-white">Create</span>
+                    <span className="text-white">
+                      <ChevronRight size={20} />
+                    </span>
+                  </button>
+                </div>
+                <div className="flex flex-col gap-2 h-full">
+                  {/* Lesson Title */}
+                  <div className="relative w-full">
+                    <input
+                      type="text"
+                      name="lessonTitle"
+                      value={lessonTit}
+                      onChange={(e) => {
+                        setLessonTit(e.target.value);
+                      }}
+                      className="outline-none border border-[#5599da] pt-6 pb-1 px-2 text-sm rounded-lg w-full text-[#434343]"
+                      placeholder="Enter here..."
+                    />
+                    <label
+                      htmlFor="lessonTitle"
+                      className={`absolute top-1 left-2.5 text-sm ${bebas.className} text-[#599fe0] tracking-wide`}
+                    >
+                      Lesson Title
+                    </label>
+                  </div>
+                  {/* Lesson Description */}
+                  <div className="h-full w-full border border-[#5599da] rounded-lg p-2 flex flex-col">
+                    <span
+                      className={`${bebas.className} text-md text-[#599fe0] tracking-wide`}
+                    >
+                      Lesson Description
+                    </span>
+                    <textarea
+                      className="w-full h-full outline-none resize-none text-sm pe-3 text-[#434343]"
+                      value={lessonDesc}
+                      onChange={(e) => {
+                        setLessonDesc(e.target.value);
+                      }}
+                      placeholder="Type here..."
+                    ></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <Overlay stateSet={stateSet} />
       <motion.div
         initial={{ opacity: 0, scale: 0, x: "-50%", y: "-50%" }}
@@ -361,7 +520,9 @@ const DetailsModal: React.FC<DescModal> = ({ stateSet, data, email }) => {
           },
         }}
         exit={{ opacity: 0, scale: 0 }}
-        className="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] flex w-4/6 xl:w-[60%] h-3/4 z-30 rounded-xl bg-white"
+        className={`absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] flex w-4/6 xl:w-[60%] h-3/4 ${
+          openAddMod ? "z-20" : "z-40"
+        } rounded-xl bg-white`}
       >
         {/* Left Side */}
         <div className="w-1/2 h-full p-5 relative flex flex-col justify-between gap-2">
@@ -664,26 +825,34 @@ const DetailsModal: React.FC<DescModal> = ({ stateSet, data, email }) => {
           </div>
           {/* Modules */}
           <div className="w-full flex flex-col grow gap-3 ">
-            <div className="flex gap-3">
+            <div className="flex w-full justify-between items-center">
+              <div className="flex gap-3">
+                <button
+                  className={`${
+                    bebas.className
+                  } text-black text-lg bg-white py-0.5 px-3 rounded-xl  ${
+                    moduleTab ? "" : "opacity-40"
+                  }`}
+                  onClick={() => setModuleTab(true)}
+                >
+                  <span className="translate-y-[1px] block">Modules</span>
+                </button>
+                <button
+                  className={`${
+                    bebas.className
+                  } text-black text-lg bg-white py-0.5 px-3 rounded-xl ${
+                    moduleTab ? "opacity-40" : ""
+                  }`}
+                  onClick={() => setModuleTab(false)}
+                >
+                  <span className="translate-y-[1px] block">Quizzes</span>
+                </button>
+              </div>
               <button
-                className={`${
-                  bebas.className
-                } text-black text-lg bg-white py-0.5 px-3 rounded-xl  ${
-                  moduleTab ? "" : "opacity-40"
-                }`}
-                onClick={() => setModuleTab(true)}
+                className="text-white"
+                onClick={() => setOpenAddMod(true)}
               >
-                <span className="translate-y-[1px] block">Modules</span>
-              </button>
-              <button
-                className={`${
-                  bebas.className
-                } text-black text-lg bg-white py-0.5 px-3 rounded-xl ${
-                  moduleTab ? "opacity-40" : ""
-                }`}
-                onClick={() => setModuleTab(false)}
-              >
-                <span className="translate-y-[1px] block">Quizzes</span>
+                <CirclePlus size={25} />
               </button>
             </div>
             <div className="overflow-y-scroll customScroll grow pe-4">

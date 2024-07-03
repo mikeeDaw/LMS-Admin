@@ -22,6 +22,7 @@ const TierPricing: React.FC<Props> = ({ tierLbl, price, features }) => {
   const [tierPrice, setPrice] = useState(price);
   const [editing, setEdit] = useState(false);
   const inpElem = useRef<any>(null);
+
   const changePrice = (e: any) => {
     const re = /^[0-9.]+$/;
     const value = e.target.value;
@@ -165,6 +166,7 @@ const TierPricing: React.FC<Props> = ({ tierLbl, price, features }) => {
           ))}
         </div>
       </div>
+
       {/* Button */}
       {editing ? (
         <motion.div
