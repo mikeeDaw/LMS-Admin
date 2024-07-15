@@ -9,12 +9,19 @@ import {
   Radiation,
   UserRound,
 } from "lucide-react";
+import { connectToDb } from "../lib/mongoose";
+import { countAdmin, countStudents } from "../_models/adminModel";
+import { countCourses } from "../_models/courseModel";
 
 const bebas = Bebas_Neue({ weight: "400", subsets: ["latin"] });
 
 export default async function Home() {
   const sesh = await auth();
-  console.log(sesh);
+  await connectToDb();
+  const students = await countStudents();
+  const teach = await countAdmin();
+  const courses = await countCourses();
+  console.log("studs:", students);
   return (
     <>
       <div className="w-full h-screen bg-[#696969] flex flex-col gap-1">
@@ -30,24 +37,27 @@ export default async function Home() {
           <div className="w-full flex gap-7 flex-wrap">
             <Pill
               header="Students"
-              count={"3,053"}
+              count={String(students)}
               accColor="#c5791e"
               LIcon={<Brain size={30} color="#FFFFFF" />}
               delayAnim={0.0}
+              goTo="#"
             />
             <Pill
               header="Instructors"
-              count={"48"}
+              count={String(teach)}
               accColor="#67bb16"
               LIcon={<UserRound size={30} color="#FFFFFF" />}
               delayAnim={0.2}
+              goTo="#"
             />
             <Pill
               header="Courses"
-              count={"258"}
+              count={String(courses)}
               accColor="#0a61b5"
               LIcon={<GraduationCap size={32} color="#FFFFFF" />}
               delayAnim={0.4}
+              goTo="/courses"
             />
             <Pill
               header="Revenue"
@@ -55,6 +65,7 @@ export default async function Home() {
               accColor="#9a1ac7"
               LIcon={<DollarSign size={30} color="#FFFFFF" />}
               delayAnim={0.6}
+              goTo="#"
             />
             <Pill
               header="Wala pa "
@@ -62,6 +73,7 @@ export default async function Home() {
               accColor="#1d80ad"
               LIcon={<Radiation size={30} color="#FFFFFF" />}
               delayAnim={0.8}
+              goTo="#"
             />
           </div>
           {/* Charts */}

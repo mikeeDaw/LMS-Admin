@@ -38,7 +38,7 @@ import {
 } from "@/app/_action/courses";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { UploadButton } from "../../uploadthing/uploadthing";
+import VideoUpload from "../../uploadthing/uploadVid";
 
 const bebas = Bebas_Neue({ weight: "400", subsets: ["latin"] });
 const popp = Poppins({ weight: "400", subsets: ["latin"] });
@@ -368,6 +368,7 @@ const DetailsModal: React.FC<DescModal> = ({ stateSet, data, email }) => {
       const media = URL.createObjectURL(e.target.files[0]);
       setVideoURL(media);
       setUpVideo(e.target.files[0]);
+      console.log(e.target.files[0]);
     }
   };
 
@@ -408,40 +409,40 @@ const DetailsModal: React.FC<DescModal> = ({ stateSet, data, email }) => {
                   className="w-[0.1px] h-[0.1px] opacity-0 absolute "
                   onChange={handleVideoChange}
                 /> */}
-                <UploadButton
-                  endpoint="imageUploader"
-                  onClientUploadComplete={(res) => {
-                    // Do something with the response
-                    console.log("Files: ", res);
-                    alert("Upload Completed");
-                  }}
-                  onUploadError={(error: Error) => {
-                    // Do something with the error.
-                    alert(`ERROR! ${error.message}`);
-                  }}
-                />
-                <label htmlFor="videoModule">
+
+                {/* <label htmlFor="videoModule">
                   <div className="h-48 border-[3px] border-dashed border-[#4e90ce] p-1 rounded-lg cursor-pointer">
                     <div className=" bg-[#e9f5ff] h-full rounded-md flex flex-col items-center justify-center gap-4">
                       {videoURL ? (
-                        <video
-                          src={videoURL}
-                          width="200"
-                          height="100"
-                          className="rounded-xl"
-                          controls
-                        ></video>
+                        <>
+                          <video
+                            src={videoURL}
+                            width="200"
+                            height="100"
+                            className="rounded-xl"
+                            controls
+                          ></video>
+                          <div className="flex items-center gap-2 text-sm w-3/4 justify-center truncate">
+                            <Paperclip size={15} />
+                            <span className="truncate">{upVideo.name}</span>
+                          </div>
+                        </>
                       ) : (
-                        <span className="text-[#aaa]">
-                          <Clapperboard size={45} />
-                        </span>
+                        <>
+                          <span className="text-[#aaa]">
+                            <Clapperboard size={45} />
+                          </span>
+                          <button className="bg-[#4e90ce] text-white text-xs ps-2 pe-3 py-1 rounded-lg flex items-center gap-1">
+                            <Paperclip size={15} /> <span>Upload a Video</span>
+                          </button>
+                        </>
                       )}
-                      <button className="bg-[#4e90ce] text-white text-xs ps-2 pe-3 py-1 rounded-lg flex items-center gap-1">
-                        <Paperclip size={15} /> <span>Upload a Video</span>
-                      </button>
                     </div>
                   </div>
-                </label>
+                </label> */}
+                <div className="border-[3px] border-dashed border-[#4e90ce] p-1 h-fit rounded-lg cursor-pointer">
+                  <VideoUpload />
+                </div>
               </div>
               {/* Right Side */}
               <div className="w-1/2 h-auto flex flex-col">

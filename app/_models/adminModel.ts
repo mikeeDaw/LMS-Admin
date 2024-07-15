@@ -29,3 +29,9 @@ export const removeCourseFromMany = (uids: string[], code: string) =>
     { _id: { $in: uids } },
     { $pullAll: { courses: [code] } }
   );
+
+export const countStudents = () =>
+  adminModel.where({ userRole: { $ne: "ADMIN" } }).countDocuments();
+
+export const countAdmin = () =>
+  adminModel.where({ userRole: "ADMIN" }).countDocuments();

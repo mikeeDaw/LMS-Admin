@@ -47,3 +47,5 @@ export const removeStudent = (uid: string, code: string) =>
     { $pullAll: { students: [uid] } },
     { new: true }
   );
+
+export const countCourses = () => courseModel.countDocuments();
